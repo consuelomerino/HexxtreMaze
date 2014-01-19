@@ -57,11 +57,11 @@ void drawSnowMan() {
     
     // Draw Body
 	glTranslatef(0.0f ,0.75f, 0.0f);
-	glutSolidSphere(0.75f,20,20);
+	glutSolidCube(0.75f);
     
     // Draw Head
 	glTranslatef(0.0f, 1.0f, 0.0f);
-	glutSolidSphere(0.25f,20,20);
+	glutSolidCube(0.75f);
     
     // Draw Eyes
 	glPushMatrix();
@@ -90,6 +90,14 @@ void computePosGamma(float gammaMove) {
     z += gammaMove * - lx * 0.1f;
 }
 
+void renderCharacter(void){
+    glPushMatrix();
+    glColor3f(1.0f, 0.5f , 0.5f);
+	glutSolidCube(0.75f);
+    glPopMatrix();
+
+}
+
 void renderScene(void) {
     
 	if (deltaMove)
@@ -103,10 +111,19 @@ void renderScene(void) {
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	gluLookAt(	x, y, z,
+    
+    gluLookAt(	x, y, z,
               x+lx, y+ly,  z+lz,
               0.0f, 1.0f,  0.0f);
     // Draw ground
+    glPushMatrix();
+    //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
+    glRotatef(deltaAngle, lx, ly, lz);
+    glTranslatef(x+(lx)*3.5,y+(ly)*3.5, z+(lz)*3.5);
+    renderCharacter();
+    glPopMatrix();
+    
+    
     
 	glColor3f(0.9f, 0.9f, 0.9f);
 	glBegin(GL_QUADS);
@@ -125,6 +142,7 @@ void renderScene(void) {
             drawSnowMan();
             glPopMatrix();
         }
+
     glutSwapBuffers();
 }
 
@@ -213,6 +231,7 @@ int main(int argc, char **argv) {
     
 	// register callbacks
 	glutDisplayFunc(renderScene);
+    //glutDisplayFunc(renderCharacter);
 	glutReshapeFunc(changeSize);
 	glutIdleFunc(renderScene);
     
