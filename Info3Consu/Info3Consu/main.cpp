@@ -12,9 +12,11 @@
 #define PI 3.14159265359
 
 vector3d characterDirection;
+vector3d characterPosition;
 vector3d initialFront;
 vector3d upDirection;
 vector3d newDirection;
+vector3d newPosition;
 
 // angle of rotation for the camera direction
 float dangle = 0.0f;
@@ -107,6 +109,7 @@ void renderCharacter(void){ //personaje
 		
     glPushMatrix();
     glColor3f(1.0f, 1.0f , 0.0f);
+    glTranslatef(characterPosition.x,characterPosition.y,characterPosition.z);
 	glRotatef(anguloARotar2, 0.0f, 1.0f,0.0f);
 	glutWireTeapot(12.0f);
     glPopMatrix();
@@ -114,8 +117,8 @@ void renderCharacter(void){ //personaje
 
 void renderScene(void) {
     
-	if (deltaMove)
-		computePos(deltaMove);
+//	if (deltaMove)
+//		computePos(deltaMove);
 //    if (gammaMove)
 //        computePosGamma(gammaMove);
     
@@ -154,8 +157,7 @@ void renderScene(void) {
 	
 	glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
-    glRotatef(deltaAngle, lx, ly, lz);
-    glTranslatef(characterDirection.x,characterDirection.y,characterDirection.z);
+    //glRotatef(deltaAngle, lx, ly, lz);
     renderCharacter();
     glPopMatrix();
     
@@ -192,12 +194,12 @@ void pressKey(int key, int xx, int yy) {
     switch (key) {
         case GLUT_KEY_UP : 
 			//deltaMove = 0.5f; 
-			traslateVector(&characterDirection, &newDirection, 0.1);
-			copyVectorValues(&newDirection, &characterDirection);			
+			traslateVector(&characterPosition, &newPosition, 0.1);
+			copyVectorValues(&newPosition, &characterPosition);			
 			break;
         case GLUT_KEY_DOWN : 
-			traslateVector(&characterDirection, &newDirection, -0.1);
-			copyVectorValues(&newDirection, &characterDirection);			
+			traslateVector(&characterPosition, &newPosition, -0.1);
+			copyVectorValues(&newPosition, &characterPosition);			
 			break;
         case GLUT_KEY_LEFT : 
 			getRotatedVector(&upDirection, &characterDirection, &newDirection, -PI/100);
@@ -274,7 +276,10 @@ int main(int argc, char **argv) {
 	upDirection.x = 0.0f;
 	upDirection.y = 1.0f;
 	upDirection.z = 0.0f;
-    
+	
+	characterPosition.x = 0.1f;
+	characterPosition.y = 0.1f;
+	characterPosition.z = 0.1f;    
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
