@@ -194,11 +194,11 @@ void pressKey(int key, int xx, int yy) {
     switch (key) {
         case GLUT_KEY_UP : 
 			//deltaMove = 0.5f; 
-			traslateVector(&characterPosition, &newPosition, 0.1);
+			traslateVector(&characterPosition, &characterDirection, &newPosition, 0.5);
 			copyVectorValues(&newPosition, &characterPosition);			
 			break;
         case GLUT_KEY_DOWN : 
-			traslateVector(&characterPosition, &newPosition, -0.1);
+			traslateVector(&characterPosition, &characterDirection, &newPosition, -0.5);
 			copyVectorValues(&newPosition, &characterPosition);			
 			break;
         case GLUT_KEY_LEFT : 
@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
 	upDirection.z = 0.0f;
 	
 	characterPosition.x = 0.1f;
-	characterPosition.y = 0.1f;
+	characterPosition.y = 0.0f;
 	characterPosition.z = 0.1f;    
 	// init GLUT and create window
 	glutInit(&argc, argv);

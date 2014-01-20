@@ -74,10 +74,10 @@ void getUnitaryVector(vector3d *v, vector3d *unitary)
 	unitary->z=v->z/sqrt(pow(v->x,2)+pow(v->y,2)+pow(v->z,2));
 }
 
-void traslateVector(vector3d *orig, vector3d *dest, float length)
+void traslateVector(vector3d *orig, vector3d *direc, vector3d *dest, float length)
 { //avanza en direccion del vector una longitud determinada
 	vector3d unitary;
-	getUnitaryVector(orig, &unitary);
+	getUnitaryVector(direc, &unitary);
 	dest->x=orig->x+(unitary.x)*length;
 	dest->y=orig->y+(unitary.y)*length;
 	dest->z=orig->z+(unitary.z)*length;

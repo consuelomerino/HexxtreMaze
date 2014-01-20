@@ -20,5 +20,5 @@ float radiansToDegrees(float radian);
 void getRotatedVector(vector3d* k, vector3d* v, vector3d* vrot, float angle);
 void copyVectorValues(vector3d *orig, vector3d *dest);
 void getUnitaryVector(vector3d *v, vector3d *unitary);
-void traslateVector(vector3d *orig, vector3d *dest, float length);
+void traslateVector(vector3d *orig, vector3d *direc, vector3d *dest, float length);
 #endif
