@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
 #ifdef __APPLE__
@@ -6,6 +7,14 @@
 #else
 #include <GL/glut.h>
 #endif
+
+#include "vector.h"
+#define PI 3.14159265359
+
+vector3d characterDirection;
+vector3d initialFront;
+vector3d upDirection;
+vector3d newDirection;
 
 // angle of rotation for the camera direction
 float dangle = 0.0f;
@@ -15,7 +24,7 @@ float gangle = 0.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f;
 
 // XZ position of the camera
-float x=0.0f, y=0.0f, z=5.0f;
+float x=0.0f, y=1.0f, z=5.0f;
 
 // the key states. These variables will be zero
 //when no key is being presses
@@ -27,6 +36,7 @@ int xOrigin = -1;
 int yOrigin = -1;
 
 void changeSize(int w, int h) {
+
     
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window of zero width).
@@ -45,7 +55,7 @@ void changeSize(int w, int h) {
 	glViewport(0, 0, w, h);
     
 	// Set the correct perspective.
-	gluPerspective(45.0f, ratio, 0.1f, 100.0f);
+	gluPerspective(45.0f, ratio, 0.1f, 1000.0f);
     
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -80,30 +90,34 @@ void drawSnowMan() {
 
 void computePos(float deltaMove) {
 	x += deltaMove * lx * 0.1f;
-  	y += deltaMove * ly * 0.1f;
+  	//y += deltaMove * ly * 0.1f;
     z += deltaMove * lz * 0.1f;
 
 }
-void computePosGamma(float gammaMove) {
+
+void computePosGamma(float gammaMove) { //se mueve en perpendicular
 	x += gammaMove * lz * 0.1f;
-  	y += gammaMove * ly * 0.1f;
+  	//y += gammaMove * ly * 0.1f;
     z += gammaMove * - lx * 0.1f;
 }
 
-void renderCharacter(void){
+void renderCharacter(void){ //personaje
+	float anguloARotar = getAnguloEntreVectores(&initialFront, &characterDirection);
+	float anguloARotar2 = characterDirection.x < 0?radiansToDegrees(anguloARotar):-radiansToDegrees(anguloARotar);
+		
     glPushMatrix();
-    glColor3f(1.0f, 0.5f , 0.5f);
-	glutSolidCube(0.75f);
+    glColor3f(1.0f, 1.0f , 0.0f);
+	glRotatef(anguloARotar2, 0.0f, 1.0f,0.0f);
+	glutWireTeapot(12.0f);
     glPopMatrix();
-
 }
 
 void renderScene(void) {
     
 	if (deltaMove)
 		computePos(deltaMove);
-    if (gammaMove)
-        computePosGamma(gammaMove);
+//    if (gammaMove)
+//        computePosGamma(gammaMove);
     
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -112,14 +126,36 @@ void renderScene(void) {
 	glLoadIdentity();
 	// Set the camera
     
-    gluLookAt(	x, y, z,
-              x+lx, y+ly,  z+lz,
-              0.0f, 1.0f,  0.0f);
-    // Draw ground
-    glPushMatrix();
+    //gluLookAt(	x, y, z,
+    //          x+lx, y+ly,  z+lz,
+    //         0.0f, 1.0f,  0.0f);
+    
+	gluLookAt(	30, 30, 30,
+                0.0, 0.0,  0.0,
+                0.0f, 1.0f,  0.0f);
+    
+	// Draw ground
+	glPushMatrix();
+    glBegin(GL_LINES);
+   	  glVertex3d(0., 0., 0.);
+	  glVertex3d(0., 0., -20.);
+	  /*glVertex3d(0., 0., 0.);
+	  glVertex3d(0., 12., 0.);
+	  glVertex3d(0., 0., 0.);
+	  glVertex3d(0., 0., 12.);*/
+	  glColor3f(0.0f, 0.f, 1.f);
+	  glVertex3d(0., 0., 0.);
+	  glVertex3d(characterDirection.x*20, characterDirection.y*20, characterDirection.z*20);	
+	glEnd();
+	glColor3f(0.0f, 1.f,0.f);
+	glPopMatrix();
+    
+	
+	
+	glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
     glRotatef(deltaAngle, lx, ly, lz);
-    glTranslatef(x+(lx)*3.5,y+(ly)*3.5, z+(lz)*3.5);
+    glTranslatef(characterDirection.x,characterDirection.y,characterDirection.z);
     renderCharacter();
     glPopMatrix();
     
@@ -153,12 +189,25 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 }
 
 void pressKey(int key, int xx, int yy) {
-    
     switch (key) {
-        case GLUT_KEY_UP : deltaMove = 0.5f; break;
-        case GLUT_KEY_DOWN : deltaMove = -0.5f; break;
-        case GLUT_KEY_LEFT : gammaMove = 0.5f; break;
-        case GLUT_KEY_RIGHT : gammaMove = -0.5f; break;
+        case GLUT_KEY_UP : 
+			//deltaMove = 0.5f; 
+			traslateVector(&characterDirection, &newDirection, 0.1);
+			copyVectorValues(&newDirection, &characterDirection);			
+			break;
+        case GLUT_KEY_DOWN : 
+			traslateVector(&characterDirection, &newDirection, -0.1);
+			copyVectorValues(&newDirection, &characterDirection);			
+			break;
+        case GLUT_KEY_LEFT : 
+			getRotatedVector(&upDirection, &characterDirection, &newDirection, -PI/100);
+			copyVectorValues(&newDirection, &characterDirection);
+							break;
+        case GLUT_KEY_RIGHT : 
+			getRotatedVector(&upDirection, &characterDirection, &newDirection, PI/100);
+			copyVectorValues(&newDirection, &characterDirection);
+			//gammaMove = -0.5f; 
+			break;
     }
 }
 
@@ -196,7 +245,7 @@ void mouseButton(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON) {
         
 		// when the button is released
-		if (state == GLUT_UP) {
+		if (state == GLUT_DOWN) {
 			dangle += deltaAngle;
 			gangle += gammaAngle;
             xOrigin = -1;
@@ -209,25 +258,29 @@ void mouseButton(int button, int state, int x, int y) {
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
 int main(int argc, char **argv) {
+
+	//direccion inicial del personaje
+	characterDirection.x = 1.0f;
+	characterDirection.y = 0.0f;
+	characterDirection.z = 1.0f;
+
+	//se inicializa el frente por defecto del objeto
+	initialFront.x = 0.0f;
+	initialFront.y = 0.0f;
+	initialFront.z = -1.0f;
+
+	//se inicializa el frente por defecto del objeto
+	upDirection.x = 0.0f;
+	upDirection.y = 1.0f;
+	upDirection.z = 0.0f;
     
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(320,320);
-	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
+	glutCreateWindow("HexxTreMaze");
     
 	// register callbacks
 	glutDisplayFunc(renderScene);
@@ -241,8 +294,8 @@ int main(int argc, char **argv) {
 	glutSpecialUpFunc(releaseKey);
     
 	// here are the two new functions
-	glutMouseFunc(mouseButton);
-	glutMotionFunc(mouseMove);
+	//glutMouseFunc(mouseButton);
+	//glutPassiveMotionFunc(mouseMove);
     
 	// OpenGL init
 	glEnable(GL_DEPTH_TEST);
@@ -252,51 +305,6 @@ int main(int argc, char **argv) {
     
 	return 1;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
