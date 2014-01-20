@@ -32,8 +32,8 @@ float x=0.0f, y=1.0f, z=5.0f;
 //when no key is being presses
 float deltaAngle = 0.0f;
 float gammaAngle = 0.0f;
-float deltaMove = 0;
-float gammaMove = 0;
+float charMove = 0;
+float charRotate = 0;
 int xOrigin = -1;
 int yOrigin = -1;
 
@@ -121,7 +121,15 @@ void renderScene(void) {
 //		computePos(deltaMove);
 //    if (gammaMove)
 //        computePosGamma(gammaMove);
-    
+    if(charMove){
+			traslateVector(&characterPosition, &characterDirection, &newPosition, charMove);
+			copyVectorValues(&newPosition, &characterPosition);
+	}
+	if(charRotate){
+			getRotatedVector(&upDirection, &characterDirection, &newDirection, charRotate*PI/100);
+			copyVectorValues(&newDirection, &characterDirection);
+	}
+	
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -193,22 +201,16 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 void pressKey(int key, int xx, int yy) {
     switch (key) {
         case GLUT_KEY_UP : 
-			//deltaMove = 0.5f; 
-			traslateVector(&characterPosition, &characterDirection, &newPosition, 0.5);
-			copyVectorValues(&newPosition, &characterPosition);			
+			charMove = 0.5f; 
 			break;
         case GLUT_KEY_DOWN : 
-			traslateVector(&characterPosition, &characterDirection, &newPosition, -0.5);
-			copyVectorValues(&newPosition, &characterPosition);			
+			charMove = -0.5f;
 			break;
         case GLUT_KEY_LEFT : 
-			getRotatedVector(&upDirection, &characterDirection, &newDirection, -PI/100);
-			copyVectorValues(&newDirection, &characterDirection);
-							break;
+			charRotate=-1.0f;
+			break;
         case GLUT_KEY_RIGHT : 
-			getRotatedVector(&upDirection, &characterDirection, &newDirection, PI/100);
-			copyVectorValues(&newDirection, &characterDirection);
-			//gammaMove = -0.5f; 
+			charRotate=1.0f;
 			break;
     }
 }
@@ -217,9 +219,9 @@ void releaseKey(int key, int x, int y) {
     
     switch (key) {
         case GLUT_KEY_UP :
-        case GLUT_KEY_DOWN : deltaMove = 0;  break;
+        case GLUT_KEY_DOWN : charMove = 0;  break;
         case GLUT_KEY_LEFT :
-        case GLUT_KEY_RIGHT : gammaMove = 0; break;
+        case GLUT_KEY_RIGHT : charRotate = 0; break;
     }
 }
 
