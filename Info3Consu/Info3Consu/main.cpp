@@ -17,6 +17,9 @@ vector3d initialFront;
 vector3d upDirection;
 vector3d newDirection;
 vector3d newPosition;
+vector3d wallDir;
+vector3d wallPos;
+vector3d wallNew;
 
 // angle of rotation for the camera direction
 float dangle = 0.0f;
@@ -90,19 +93,19 @@ void drawSnowMan() {
 	glutSolidCone(0.08f,0.5f,10,2);
 }
 
-void computePos(float deltaMove) {
+/*void computePos(float deltaMove) {
 	x += deltaMove * lx * 0.1f;
   	//y += deltaMove * ly * 0.1f;
     z += deltaMove * lz * 0.1f;
 
-}
+}*/
 
-void computePosGamma(float gammaMove) { //se mueve en perpendicular
+/*void computePosGamma(float gammaMove) { //se mueve en perpendicular
 	x += gammaMove * lz * 0.1f;
   	//y += gammaMove * ly * 0.1f;
     z += gammaMove * - lx * 0.1f;
 }
-
+*/
 void renderCharacter(void){ //personaje
 	float anguloARotar = getAnguloEntreVectores(&initialFront, &characterDirection);
 	float anguloARotar2 = characterDirection.x < 0?radiansToDegrees(anguloARotar):-radiansToDegrees(anguloARotar);
@@ -115,15 +118,27 @@ void renderCharacter(void){ //personaje
     glPopMatrix();
 }
 
+void renderWall(void){
+	float volume=2.0f;
+	float floor=volume/2.0f;
+	glPushMatrix();
+    glColor3f(1.4f, 1.0f , 0.2f);
+    glTranslatef(wallPos.x,floor,wallPos.z);
+	glRotatef(0, 0.0f, 0.0f, 0.0f);
+	glutSolidCube(volume);
+    glPopMatrix();
+}
 void renderScene(void) {
     
 //	if (deltaMove)
 //		computePos(deltaMove);
-//    if (gammaMove)
+//   if (gammaMove)
 //        computePosGamma(gammaMove);
     if(charMove){
 			traslateVector(&characterPosition, &characterDirection, &newPosition, charMove);
 			copyVectorValues(&newPosition, &characterPosition);
+			traslateVector(&wallPos, &wallDir, &wallNew, 1.0f);
+			copyVectorValues(&wallNew, &wallDir);
 	}
 	if(charRotate){
 			getRotatedVector(&upDirection, &characterDirection, &newDirection, charRotate*PI/100);
@@ -168,7 +183,9 @@ void renderScene(void) {
     //glRotatef(deltaAngle, lx, ly, lz);
     renderCharacter();
     glPopMatrix();
-    
+    glPushMatrix();
+	renderWall();
+	glPopMatrix();
     
     
 	glColor3f(0.9f, 0.9f, 0.9f);
@@ -188,7 +205,6 @@ void renderScene(void) {
             drawSnowMan();
             glPopMatrix();
         }
-
     glutSwapBuffers();
 }
 
@@ -282,6 +298,15 @@ int main(int argc, char **argv) {
 	characterPosition.x = 0.1f;
 	characterPosition.y = 0.0f;
 	characterPosition.z = 0.1f;    
+	
+	
+	wallPos.x=10.0f;
+	wallPos.y=0.0f;
+	wallPos.z=-10.0f;
+	
+	wallDir.x=-wallPos.x;
+	wallDir.y=-wallPos.y;
+	wallDir.z=-wallPos.z;
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -305,10 +330,10 @@ int main(int argc, char **argv) {
 	//glutPassiveMotionFunc(mouseMove);
     
 	// OpenGL init
-	glEnable(GL_DEPTH_TEST);
-    
+	glEnable(GL_DEPTH_TEST);    
 	// enter GLUT event processing cycle
 	glutMainLoop();
+
     
 	return 1;
 }
