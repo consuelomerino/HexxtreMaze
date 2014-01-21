@@ -121,17 +121,21 @@ void renderCharacter(void){ //personaje
 void renderWall(void){
 	float volume=2.0f;
 	float floor=volume/2.0f;
+    float anguloARotar = getAnguloEntreVectores(&initialFront, &wallPos);
+	float anguloARotar2;
 	glPushMatrix();
     glColor3f(0.2f, 0.5f, 0.5f);
     glTranslatef(wallPos.x,floor,wallPos.z);
 	for(int i = -3; i < 3; i++){
-            glPushMatrix();
-				vector3d wallDirNew;
-				//glRotatef(0, 0.0f, 1.0f, 0.0f);
-				traslateVectorNormal(&wallPos, &wallDir, &wallDirNew, volume*i);
-				glTranslatef(wallDirNew.z,0,-wallDirNew.x);
-				glutSolidCube(volume);
-            glPopMatrix();
+        glPushMatrix();
+            vector3d wallDirNew;
+			//glRotatef(0, 0.0f, 1.0f, 0.0f);
+			traslateVectorNormal(&wallPos, &wallDir, &wallDirNew, volume*i);
+			glTranslatef(wallDirNew.x,0,wallDirNew.z);
+            anguloARotar2 = wallPos.x < 0? radiansToDegrees(anguloARotar) : -radiansToDegrees(anguloARotar);
+            glRotatef(anguloARotar2, 0.0f, 1.0f, 0.0f);
+            glutSolidCube(volume);
+        glPopMatrix();
     }
 	//glRotatef(0, 0.0f, 0.0f, 0.0f);
 	glPopMatrix();
@@ -310,7 +314,7 @@ int main(int argc, char **argv) {
 	
 	wallPos.x=10.0f;
 	wallPos.y=0.0f;
-	wallPos.z=-10.0f;
+	wallPos.z=19.0f;
 	
 	wallDir.x=-wallPos.x;
 	wallDir.y=-wallPos.y;
