@@ -122,11 +122,19 @@ void renderWall(void){
 	float volume=2.0f;
 	float floor=volume/2.0f;
 	glPushMatrix();
-    glColor3f(1.4f, 1.0f , 0.2f);
+    glColor3f(0.2f, 0.5f, 0.5f);
     glTranslatef(wallPos.x,floor,wallPos.z);
-	glRotatef(0, 0.0f, 0.0f, 0.0f);
-	glutSolidCube(volume);
-    glPopMatrix();
+	for(int i = -3; i < 3; i++){
+            glPushMatrix();
+				vector3d wallDirNew;
+				//glRotatef(0, 0.0f, 1.0f, 0.0f);
+				traslateVectorNormal(&wallPos, &wallDir, &wallDirNew, volume*i);
+				glTranslatef(wallDirNew.z,0,-wallDirNew.x);
+				glutSolidCube(volume);
+            glPopMatrix();
+    }
+	//glRotatef(0, 0.0f, 0.0f, 0.0f);
+	glPopMatrix();
 }
 void renderScene(void) {
     
@@ -137,8 +145,8 @@ void renderScene(void) {
     if(charMove){
 			traslateVector(&characterPosition, &characterDirection, &newPosition, charMove);
 			copyVectorValues(&newPosition, &characterPosition);
-			traslateVector(&wallPos, &wallDir, &wallNew, 1.0f);
-			copyVectorValues(&wallNew, &wallDir);
+			traslateVector(&wallPos, &wallDir, &wallNew, charMove);
+			copyVectorValues(&wallNew, &wallPos);
 	}
 	if(charRotate){
 			getRotatedVector(&upDirection, &characterDirection, &newDirection, charRotate*PI/100);
@@ -162,30 +170,30 @@ void renderScene(void) {
     
 	// Draw ground
 	glPushMatrix();
-    glBegin(GL_LINES);
-   	  glVertex3d(0., 0., 0.);
-	  glVertex3d(0., 0., -20.);
-	  /*glVertex3d(0., 0., 0.);
-	  glVertex3d(0., 12., 0.);
-	  glVertex3d(0., 0., 0.);
-	  glVertex3d(0., 0., 12.);*/
-	  glColor3f(0.0f, 0.f, 1.f);
-	  glVertex3d(0., 0., 0.);
-	  glVertex3d(characterDirection.x*20, characterDirection.y*20, characterDirection.z*20);	
-	glEnd();
-	glColor3f(0.0f, 1.f,0.f);
+		glBegin(GL_LINES);
+		  glVertex3d(0., 0., 0.);
+		  glVertex3d(0., 0., -20.);
+		  /*glVertex3d(0., 0., 0.);
+		  glVertex3d(0., 12., 0.);
+		  glVertex3d(0., 0., 0.);
+		  glVertex3d(0., 0., 12.);*/
+		  glColor3f(0.0f, 0.f, 1.f);
+		  glVertex3d(0., 0., 0.);
+		  glVertex3d(characterDirection.x*20, characterDirection.y*20, characterDirection.z*20);	
+		glEnd();
+		glColor3f(0.0f, 1.f,0.f);
 	glPopMatrix();
     
 	
 	
-	glPushMatrix();
+	//glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
     //glRotatef(deltaAngle, lx, ly, lz);
     renderCharacter();
-    glPopMatrix();
-    glPushMatrix();
+    //glPopMatrix();
+    //glPushMatrix();
 	renderWall();
-	glPopMatrix();
+	//glPopMatrix();
     
     
 	glColor3f(0.9f, 0.9f, 0.9f);
@@ -201,8 +209,8 @@ void renderScene(void) {
 	for(int i = -3; i < 3; i++)
 		for(int j=-3; j < 3; j++) {
             glPushMatrix();
-            glTranslatef(i*10.0,0,j * 10.0);
-            drawSnowMan();
+				glTranslatef(i*10.0,0,j * 10.0);
+				drawSnowMan();
             glPopMatrix();
         }
     glutSwapBuffers();
