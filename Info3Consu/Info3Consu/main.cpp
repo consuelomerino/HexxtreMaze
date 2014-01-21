@@ -118,19 +118,20 @@ void renderCharacter(void){ //personaje
     glPopMatrix();
 }
 
-void renderWall(void){
+void renderWall(vector3d *wallDir, float length){
 	float volume=2.0f;
 	float floor=volume/2.0f;
     float anguloARotar = getAnguloEntreVectores(&initialFront, &wallPos);
 	float anguloARotar2;
 	glPushMatrix();
     glColor3f(0.2f, 0.5f, 0.5f);
-    glTranslatef(wallPos.x,floor,wallPos.z);
+	traslateVector(wallDir, wallDir, &wallPos, length);
+	glTranslatef(wallPos.x,floor,wallPos.z);
 	for(int i = -3; i < 3; i++){
         glPushMatrix();
             vector3d wallDirNew;
 			//glRotatef(0, 0.0f, 1.0f, 0.0f);
-			traslateVectorNormal(&wallPos, &wallDir, &wallDirNew, volume*i);
+			traslateVectorNormal(&wallPos, wallDir, &wallDirNew, volume*i);
 			glTranslatef(wallDirNew.x,0,wallDirNew.z);
             anguloARotar2 = wallPos.x < 0? radiansToDegrees(anguloARotar) : -radiansToDegrees(anguloARotar);
             glRotatef(anguloARotar2, 0.0f, 1.0f, 0.0f);
@@ -139,6 +140,17 @@ void renderWall(void){
     }
 	//glRotatef(0, 0.0f, 0.0f, 0.0f);
 	glPopMatrix();
+}
+
+void makeGeometricShape(vector3d* direc, float distancia, int cantidadDeLados)
+{
+	vector3d direcUnitary;
+	float geometricAngle=360/cantidadDeLados;
+	for(int i=0;i<cantidadDeLados-1;i++){
+		getUnitaryVector(direc, &direcUnitary);
+		renderWall(&direcUnitary, distancia);
+		glRotatef(geometricAngle, 0.0f, 1.0f, 0.0f);
+	}
 }
 void renderScene(void) {
     
@@ -149,8 +161,9 @@ void renderScene(void) {
     if(charMove){
 			traslateVector(&characterPosition, &characterDirection, &newPosition, charMove);
 			copyVectorValues(&newPosition, &characterPosition);
-			traslateVector(&wallPos, &wallDir, &wallNew, charMove);
-			copyVectorValues(&wallNew, &wallPos);
+			//traslateVector(&wallPos, &wallDir, &wallNew, charMove);
+			//copyVectorValues(&wallNew, &wallPos);
+			//makeGeometricShape(&wallDir, 7, 10);
 	}
 	if(charRotate){
 			getRotatedVector(&upDirection, &characterDirection, &newDirection, charRotate*PI/100);
@@ -188,7 +201,7 @@ void renderScene(void) {
 		glColor3f(0.0f, 1.f,0.f);
 	glPopMatrix();
     
-	
+	makeGeometricShape(&wallDir, characterPosition.x, 10);
 	
 	//glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
@@ -196,7 +209,6 @@ void renderScene(void) {
     renderCharacter();
     //glPopMatrix();
     //glPushMatrix();
-	renderWall();
 	//glPopMatrix();
     
     
@@ -307,12 +319,12 @@ int main(int argc, char **argv) {
 	upDirection.y = 1.0f;
 	upDirection.z = 0.0f;
 	
-	characterPosition.x = 0.1f;
+	characterPosition.x = 0.000000000001f;
 	characterPosition.y = 0.0f;
-	characterPosition.z = 0.1f;    
+	characterPosition.z = 0.000000000001f;    
 	
 	
-	wallPos.x=10.0f;
+	wallPos.x=-30.0f;
 	wallPos.y=0.0f;
 	wallPos.z=19.0f;
 	
