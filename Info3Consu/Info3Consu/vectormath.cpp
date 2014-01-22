@@ -41,6 +41,10 @@ float radiansToDegrees(float radian)
 	return radian*180/PI;
 }
 
+float degreesToRadians(float degrees){
+	return degrees*PI/180;
+}
+
 void getRotatedVector(vector3d *k, vector3d *v, vector3d *vrot, float angle)
 {
 	vector3d vesc, vesc2, vesc3;

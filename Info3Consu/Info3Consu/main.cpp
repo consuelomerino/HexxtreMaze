@@ -132,11 +132,15 @@ void renderWall(vector3d *wallDir, float length){
 		glBegin(GL_LINES);
 			glVertex3d(-wallPos.x*20, -wallPos.y*20, -wallPos.z*20);
 			glVertex3d(wallPos.x*20, wallPos.y*20, wallPos.z*20);	
+			glColor3f(0.2f, 0.1f, 0.5f);
+			glVertex3d(wallDir->x*20, wallDir->y*20, wallDir->z*20);
+			glVertex3d(-wallDir->x*20, -wallDir->y*20, -wallDir->z*20);	
 		glEnd();
 	glPopMatrix();
-	for(int i = -3; i < 3; i++){
+	for(int i = -2; i < 3; i++){
         glPushMatrix();
             vector3d wallDirNew;
+			glColor3f(0.2f, 0.1f, 0.7f);
 			//glRotatef(0, 0.0f, 1.0f, 0.0f);
 			traslateVectorNormal(&wallPos, wallDir, &wallDirNew, volume*i);
 			glTranslatef(wallDirNew.x,0,wallDirNew.z);
@@ -156,7 +160,7 @@ void makeGeometricShape(vector3d* direc, float distancia, int cantidadDeLados){
 	glPushMatrix();
 	getUnitaryVector(direc, &direcUnitary);
 	for(int i=0;i<cantidadDeLados-1;i++){
-		getRotatedVector(&upDirection, &direcUnitary, &newDirec, 1.4);
+		getRotatedVector(&upDirection, &direcUnitary, &newDirec, degreesToRadians(geometricAngle));
 		renderWall(&newDirec, distancia);
 		copyVectorValues(&newDirec, &direcUnitary);
 	}
@@ -212,7 +216,7 @@ void renderScene(void) {
 		glColor3f(0.0f, 1.f,0.f);
 	glPopMatrix();
     
-	makeGeometricShape(&wallDir, characterPosition.x, 4);
+	makeGeometricShape(&wallDir, characterPosition.x, 10);
 	
 	//glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
