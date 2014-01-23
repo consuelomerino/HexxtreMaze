@@ -119,7 +119,7 @@ void renderCharacter(void){ //personaje
     glPopMatrix();
 }
 
-void renderWall(vector3d *wallDir, float length, float distance){
+void renderWall(vector3d *wallDir, float angle, float distance){
 	float volume=2.0f;
 	float floor=volume/2.0f;
     float anguloARotar = getAnguloEntreVectores(&initialFront, wallDir);
@@ -127,7 +127,23 @@ void renderWall(vector3d *wallDir, float length, float distance){
 	glPushMatrix();
     glColor3f(0.2f, 0.5f, 0.5f);
 	traslateVector(wallDir, wallDir, &wallPos, distance);
-	glTranslatef(wallPos.x,floor,wallPos.z);
+	//glTranslatef(wallPos.x,floor,wallPos.z);
+	vector3d wall45grados1, wallVertice45gradosInt1, wallVertice45gradosExt1;
+	vector3d wall45grados2, wallVertice45gradosInt2, wallVertice45gradosExt2;
+	getRotatedVector(&upDirection, wallDir, &wall45grados1, degreesToRadians(angle/2));
+	getRotatedVector(&upDirection, wallDir, &wall45grados2, -degreesToRadians(angle/2));
+	glPushMatrix();
+	glBegin(GL_LINES);
+		//glVertex3d(-wallPos.x*20, -wallPos.y*20, -wallPos.z*20);
+		//glVertex3d(wallPos.x*20, wallPos.y*20, wallPos.z*20);	
+		glColor3f(0.0f, 0.0f, 0.5f);
+		glVertex3d(wall45grados1.x*20, wall45grados1.y*20, wall45grados1.z*20);
+		glVertex3d(0, 0, 0);
+		glColor3f(0.0f, 0.7f, 0.5f);
+		glVertex3d(wall45grados2.x*20, wall45grados2.y*20, wall45grados2.z*20);
+		glVertex3d(0, 0, 0);
+	glEnd();
+	glPopMatrix();
 	glPushMatrix();
 		glBegin(GL_LINES);
 			//glVertex3d(-wallPos.x*20, -wallPos.y*20, -wallPos.z*20);
@@ -154,53 +170,47 @@ void renderWall(vector3d *wallDir, float length, float distance){
 		glColor3f(0.2f, 0.1f, 0.7f);
 		//glRotatef(0, 0.0f, 1.0f, 0.0f);
 		//traslateVector(&wallPos, wallDir, &wallDirNew, 1);
-		glTranslatef(wallDir->x,0,wallDir->z);
-		anguloARotar2 = wallPos.x > 0? radiansToDegrees(anguloARotar) : -radiansToDegrees(anguloARotar);
-		glRotatef(anguloARotar2, 0.0f, 1.0f, 0.0f);
-		vector3d wallVertice1, wallVertice2;
-		traslateVector(wallDir, wallDir, &wallVertice1, distance);
-		traslateVector(wallDir, wallDir, &wallVertice2, distance+2);
+		//glTranslatef(wallDir->x,0,wallDir->z);
+		//anguloARotar2 = wallPos.x < 0? radiansToDegrees(anguloARotar) : -radiansToDegrees(anguloARotar);
+		//glRotatef(anguloARotar2, 0.0f, 1.0f, 0.0f);
+		traslateVector(&wall45grados1, &wall45grados1, &wallVertice45gradosInt1, getMagnitudVector(&wallPos));
+		traslateVector(&wall45grados1, &wall45grados1, &wallVertice45gradosExt1, getMagnitudVector(&wallPos)+2);
+		traslateVector(&wall45grados2, &wall45grados2, &wallVertice45gradosInt2, getMagnitudVector(&wallPos));
+		traslateVector(&wall45grados2, &wall45grados2, &wallVertice45gradosExt2, getMagnitudVector(&wallPos)+2);
 		glBegin(GL_QUADS); //6 caras en total
 			vector3d a, b, c, d, e, f, g, h;
-			/*a.x=0; a.y=1; a.z=1;
-			b.x=1; b.y=1; b.z=1;
-			c.x=1; c.y=0; c.z=1;
-			d.x=0; d.y=0; d.z=1;
-			e.x=0; e.y=1; e.z=0;
-			f.x=1; f.y=1; f.z=0;
-			g.x=1; g.y=0; g.z=0;
-			h.x=0; h.y=0; h.z=0;
-			a.x=wallVertice2.x; a.y=1; a.z=wallVertice2.z;
-			b.x=1; b.y=1; b.z=1;
-			c.x=1; c.y=0; c.z=1;
-			d.x=wallVertice2.x; d.y=0; d.z=wallVertice2.z;
-			e.x=wallVertice1.x; e.y=1; e.z=wallVertice1.z;
-			f.x=1; f.y=1; f.z=0;
-			g.x=1; g.y=0; g.z=0;
-			h.x=wallVertice1.x; h.y=0; h.z=wallVertice1.z;*/
-			b.x=wallVertice2.x; b.y=1; b.z=wallVertice2.z;
-			a.x=0; a.y=1; a.z=1;
-			d.x=0; d.y=0; d.z=1;
-			c.x=wallVertice2.x; c.y=0; c.z=wallVertice2.z;
-			f.x=wallVertice1.x; f.y=1; f.z=wallVertice1.z;
-			e.x=0; e.y=1; e.z=0;
-			h.x=0; h.y=0; h.z=0;
-			g.x=wallVertice1.x; g.y=0; g.z=wallVertice1.z;
+			/*a.x=-1;  a.y=1; a.z=1; //funciona
+			b.x=1;   b.y=1; b.z=1;
+			c.x=1;   c.y=-1; c.z=1;
+			d.x=-1;  d.y=-1; d.z=1;
+			e.x=-1;  e.y=1; e.z=-1;
+			f.x=1;   f.y=1; f.z=-1;
+			g.x=1;   g.y=-1; g.z=-1;
+			h.x=-1;   h.y=-1; h.z=-1;*/
+			a.x=wallVertice45gradosInt1.x; 	a.y=1; a.z=wallVertice45gradosInt1.z;
+			b.x=wallVertice45gradosInt2.x; 	b.y=1; b.z=wallVertice45gradosInt2.z;
+			c.x=wallVertice45gradosInt2.x; 	c.y=0; c.z=wallVertice45gradosInt2.z;
+			d.x=wallVertice45gradosInt1.x; 	d.y=0; d.z=wallVertice45gradosInt1.z;
+			e.x=wallVertice45gradosExt1.x; 	e.y=1; e.z=wallVertice45gradosExt1.z;
+			f.x=wallVertice45gradosExt2.x; 	f.y=1; f.z=wallVertice45gradosExt2.z;
+			g.x=wallVertice45gradosExt2.x; 	g.y=0; g.z=wallVertice45gradosExt2.z;
+			h.x=wallVertice45gradosExt1.x; 	h.y=0; h.z=wallVertice45gradosExt1.z;
 			glColor3f(1.0f, 0.0f, 0.0f);
 			//glVertex3f(0.0f,1.0f, 2.0f); glVertex3f(1.0f,1.0f, 2.0f);
 			//glVertex3f(0.0f,0.0f, 2.0f); glVertex3f(1.0f,0.0f, 2.0f); 
-			//Pared Externa
+			//Pared Interna
 			//glVertex3f(0,1,1); glVertex3f(1,1,1); //0,1 1,1
 			//glVertex3f(1,0,1); glVertex3f(0,0,1); //1,0 0,0
-			glVertex3f(a.x,a.y,a.z); glVertex3f(b.x,b.y,b.z); //0,1 1,1
+			glVertex3f(a.x,a.y,a.z); 			glColor3f(1.0f, 1.0f, 0.0f);glVertex3f(b.x,b.y,b.z); //0,1 1,1
+
 			glVertex3f(c.x,c.y,c.z); glVertex3f(d.x,d.y,d.z); //1,0 0,0
-			//Pared Interna
+			//Pared Externa
 			//glVertex3f(0,1,0); glVertex3f(1,1,0); //0,1 1,1
 			//glVertex3f(1,0,0); glVertex3f(0,0,0); //1,0 0,0
 			glVertex3f(e.x,e.y,e.z); glVertex3f(f.x,f.y,f.z); //0,1 1,1
 			glVertex3f(g.x,g.y,g.z); glVertex3f(h.x,h.y,h.z); //1,0 0,0
 			//Pared costado
-			glColor3f(0.0f,1.0f, 0.0f);
+			//glColor3f(0.0f,1.0f, 0.0f);
 			//glVertex3f(1.0f,0.0f, 1.0f); glVertex3f(1.0f,1.0f, 1.0f);
 			//glVertex3f(1.0f,1.0f, 0.0f); glVertex3f(1.0f,0.0f, 0.0f);
 			glVertex3f(b.x,b.y,b.z); glVertex3f(f.x,f.y,f.z); //0,1 1,1
@@ -209,17 +219,18 @@ void renderWall(vector3d *wallDir, float length, float distance){
 			//Pared costado
 			//glVertex3f(0.0f,0.0f, 1.0f); glVertex3f(0.0f,1.0f, 1.0f);
 			//glVertex3f(0.0f,1.0f, 0.0f); glVertex3f(0.0f,0.0f, 0.0f);
-			glVertex3f(d.x,d.y,d.z); glVertex3f(a.x,a.y,a.z); //0,1 1,1
-			glVertex3f(e.x,e.y,e.z); glVertex3f(h.x,h.y,h.z); //1,0 0,0
+			glColor3f(1.0f, 0.0f, 0.0f);
+			glVertex3f(a.x,a.y,a.z); 			glColor3f(1.0f, 1.0f, 0.0f); glVertex3f(e.x,e.y,e.z); //0,1 1,1
+			glVertex3f(h.x,h.y,h.z); glVertex3f(d.x,d.y,d.z); //1,0 0,0
 			//Base de abajo
-			glColor3f(0.0f,0.0f, 1.0f);
+			//glColor3f(0.0f,0.0f, 1.0f);
 			//glVertex3f(0.0f,0.0f, 1.0f); glVertex3f(1.0f,0.0f, 1.0f);
 			//glVertex3f(1.0f,0.0f, 0.0f); glVertex3f(0.0f,0.0f, 0.0f);	
 			glVertex3f(c.x,c.y,c.z); glVertex3f(g.x,g.y,g.z); //0,1 1,1
 			glVertex3f(h.x,h.y,h.z); glVertex3f(d.x,d.y,d.z); //1,0 0,0			
 			//Base de arriba
-			glVertex3f(a.x,a.y,a.z); glVertex3f(e.x,e.y,e.z); //0,1 1,1
-			glVertex3f(f.x,f.y,f.z); glVertex3f(b.x,b.y,b.z); //1,0 0,0		
+			glVertex3f(b.x,b.y,b.z); glColor3f(1.0f, 0.0f, 0.0f); glVertex3f(a.x,a.y,a.z); glColor3f(1.0f, 1.0f, 0.0f); //0,1 1,1
+			glVertex3f(e.x,e.y,e.z); glVertex3f(f.x,f.y,f.z);  //1,0 0,0		
 
 		glEnd(); 
 		//glutSolidCube(volume);
@@ -240,7 +251,7 @@ void makeGeometricShape(vector3d* direc, float distancia, int cantidadDeLados){
 	for(int i=0;i<cantidadDeLados-1;i++){
 		getRotatedVector(&upDirection, &direcUnitary, &newDirec, degreesToRadians(geometricAngle));
 		length=2;
-		renderWall(&newDirec, length, distancia);
+		renderWall(&newDirec, geometricAngle, distancia);
 		copyVectorValues(&newDirec, &direcUnitary);
 	}
 	glPopMatrix();
@@ -295,7 +306,7 @@ void renderScene(void) {
 		glColor3f(0.0f, 1.f,0.f);
 	glPopMatrix();
     
-	makeGeometricShape(&wallDir, characterPosition.x, 4);
+	makeGeometricShape(&wallDir, characterPosition.x, 5);
 	
 	//glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
@@ -308,10 +319,10 @@ void renderScene(void) {
     
 	glColor3f(0.9f, 0.9f, 0.9f);
 	glBegin(GL_QUADS);
-    glVertex3f(-100.0f, 0.0f, -100.0f);
-    glVertex3f(-100.0f, 0.0f,  100.0f);
-    glVertex3f( 100.0f, 0.0f,  100.0f);
-    glVertex3f( 100.0f, 0.0f, -100.0f);
+		glVertex3f(-100.0f, 0.0f, -100.0f);
+		glVertex3f(-100.0f, 0.0f,  100.0f);
+		glVertex3f( 100.0f, 0.0f,  100.0f);
+		glVertex3f( 100.0f, 0.0f, -100.0f);
 	glEnd();
     
     // Draw 36 SnowMen
