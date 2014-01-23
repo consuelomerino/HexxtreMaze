@@ -14,6 +14,12 @@ typedef struct{
 	float w4;
 	float w5;
 	float w6;
+	vector3d w1dir;
+	vector3d w2dir;
+	vector3d w3dir;
+	vector3d w4dir;
+	vector3d w5dir;
+	vector3d w6dir;
 }wallDistance;
 
 typedef struct{

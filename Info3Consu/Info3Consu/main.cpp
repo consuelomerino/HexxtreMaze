@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -307,12 +308,12 @@ void renderScene(void) {
 		glColor3f(0.0f, 1.f,0.f);
 	glPopMatrix();
     
-	makeGeometricShape(&wallDir, wall.w1, 5);
-	makeGeometricShape(&wallDir, wall.w2, 1);
-	makeGeometricShape(&wallDir, wall.w3, 3);
-	makeGeometricShape(&wallDir, wall.w4, 4);
-	makeGeometricShape(&wallDir, wall.w5, 6);
-	makeGeometricShape(&wallDir, wall.w6, 9);
+	makeGeometricShape(&wall.w1dir, wall.w1, 5);
+	makeGeometricShape(&wall.w2dir, wall.w2, 4);
+	makeGeometricShape(&wall.w3dir, wall.w3, 7);
+	makeGeometricShape(&wall.w4dir, wall.w4, 4);
+	makeGeometricShape(&wall.w5dir, wall.w5, 6);
+	makeGeometricShape(&wall.w6dir, wall.w6, 9);
 	
 	//glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
@@ -414,14 +415,48 @@ void mouseButton(int button, int state, int x, int y) {
 }
 
 void drawWalls(int value){
-	wall.w1==0?wall.w1=initialDist:wall.w1--;
-	wall.w2==0?wall.w2=initialDist:wall.w2--;
-	wall.w3==0?wall.w3=initialDist:wall.w3--;
-	wall.w4==0?wall.w4=initialDist:wall.w4--;
-	wall.w5==0?wall.w5=initialDist:wall.w5--;
-	wall.w6==0?wall.w6=initialDist:wall.w6--;
+	int maxrand=100;
+	float step=0.4;
+	if(wall.w1<0){
+		wall.w1=initialDist;
+		srand(time(NULL));
+		wall.w1dir.x=rand()%maxrand-maxrand/2;
+		wall.w1dir.y=0;
+		wall.w1dir.z=rand()%maxrand-maxrand/2;
+		}else{
+		wall.w1=wall.w1-step;}
+	if(wall.w2<0){wall.w2=initialDist;
+		srand(time(NULL));
+		wall.w2dir.x=rand()%maxrand-maxrand/2;
+		wall.w2dir.y=0;
+		wall.w2dir.z=rand()%maxrand-maxrand/2;
+	}else{wall.w2=wall.w2-step;}
+	if(wall.w3<0){wall.w3=initialDist;
+			srand(time(NULL));
+		wall.w3dir.x=rand()%maxrand-maxrand/2;
+		wall.w3dir.y=0;
+		wall.w3dir.z=rand()%maxrand-maxrand/2;
+		}else{wall.w3=wall.w3-step;}
+	if(wall.w4<0){wall.w4=initialDist;
+			srand(time(NULL));
+		wall.w4dir.x=rand()%maxrand-maxrand/2;
+		wall.w4dir.y=0;
+		wall.w4dir.z=rand()%maxrand-maxrand/2;
+		}else{wall.w4=wall.w4-step;}
+	if(wall.w5<0){wall.w5=initialDist;
+			srand(time(NULL));
+		wall.w5dir.x=rand()%maxrand-maxrand/2;
+		wall.w5dir.y=0;
+		wall.w5dir.z=rand()%maxrand-maxrand/2;
+	}else{wall.w5=wall.w5-step;}
+	if(wall.w6<0){wall.w6=initialDist;
+			srand(time(NULL));
+		wall.w6dir.x=rand()%maxrand-maxrand/2;
+		wall.w6dir.y=0;
+		wall.w6dir.z=rand()%maxrand-maxrand/2;
+	}else{wall.w6=wall.w6-step;}
 		
-	glutTimerFunc(200, drawWalls, 0);
+	glutTimerFunc(20, drawWalls, 0);
     
 }
 
@@ -483,7 +518,7 @@ int main(int argc, char **argv) {
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
-	glutTimerFunc(200, drawWalls, 0);
+	glutTimerFunc(20, drawWalls, 0);
     
 	// here are the two new functions
 	//glutMouseFunc(mouseButton);
