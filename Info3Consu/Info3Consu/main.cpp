@@ -20,7 +20,8 @@ vector3d newPosition;
 vector3d wallDir;
 vector3d wallPos;
 vector3d wallNew;
-
+wallDistance wall;
+float initialDist;
 // angle of rotation for the camera direction
 float dangle = 0.0f;
 float gangle = 0.0f;
@@ -306,7 +307,12 @@ void renderScene(void) {
 		glColor3f(0.0f, 1.f,0.f);
 	glPopMatrix();
     
-	makeGeometricShape(&wallDir, characterPosition.x, 5);
+	makeGeometricShape(&wallDir, wall.w1, 5);
+	makeGeometricShape(&wallDir, wall.w2, 1);
+	makeGeometricShape(&wallDir, wall.w3, 3);
+	makeGeometricShape(&wallDir, wall.w4, 4);
+	makeGeometricShape(&wallDir, wall.w5, 6);
+	makeGeometricShape(&wallDir, wall.w6, 9);
 	
 	//glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
@@ -407,8 +413,20 @@ void mouseButton(int button, int state, int x, int y) {
 	}
 }
 
-int main(int argc, char **argv) {
+void drawWalls(int value){
+	wall.w1==0?wall.w1=initialDist:wall.w1--;
+	wall.w2==0?wall.w2=initialDist:wall.w2--;
+	wall.w3==0?wall.w3=initialDist:wall.w3--;
+	wall.w4==0?wall.w4=initialDist:wall.w4--;
+	wall.w5==0?wall.w5=initialDist:wall.w5--;
+	wall.w6==0?wall.w6=initialDist:wall.w6--;
+		
+	glutTimerFunc(200, drawWalls, 0);
+    
+}
 
+int main(int argc, char **argv) {
+	initialDist=120;
 	//direccion inicial del personaje
 	characterDirection.x = 1.0f;
 	characterDirection.y = 0.0f;
@@ -436,7 +454,19 @@ int main(int argc, char **argv) {
 	wallDir.x=-wallPos.x;
 	wallDir.y=-wallPos.y;
 	wallDir.z=-wallPos.z;
+	
+	wall.w1=100;
+	wall.w2=80;
+	wall.w3=60;
+	wall.w4=40;
+	wall.w5=20;
+	wall.w6=120;
+	
 	// init GLUT and create window
+	
+	
+	
+	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
@@ -453,6 +483,7 @@ int main(int argc, char **argv) {
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
+	glutTimerFunc(200, drawWalls, 0);
     
 	// here are the two new functions
 	//glutMouseFunc(mouseButton);

@@ -8,6 +8,15 @@ typedef struct{
 }vector3d;
 
 typedef struct{
+	float w1;
+	float w2;
+	float w3;
+	float w4;
+	float w5;
+	float w6;
+}wallDistance;
+
+typedef struct{
 	float x;
 	float y;
 }vector2d;
