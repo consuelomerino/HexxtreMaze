@@ -95,7 +95,34 @@ glColor3f(1.0f, 1.0f, 1.0f);
 	glRotatef(0.0f,1.0f, 0.0f, 0.0f);
 	glutSolidCone(0.08f,0.5f,10,2);
 }
-
+float collision(vector3d* vi1, vector3d* vi2, vector3d* ve1, vector3d* ve2){
+    //if el angulo es igual a 2*pi, entonces esta dentro de la figura geometrica 
+    //get vectores de pos a v1, pos a v2, etc.
+	//ve1    ve2
+	//vi1    vi2
+	//d		c
+	//a    	b
+	vector3d a, b, d, c;
+	a.x=vi1->x-characterPosition.x;
+	a.y=0;
+	a.z=vi1->z-characterPosition.z;
+	b.x=vi2->x-characterPosition.x;
+	b.y=0;
+	b.z=vi2->z-characterPosition.z;
+	c.x=ve2->x-characterPosition.x;
+	c.y=0;
+	c.z=ve2->z-characterPosition.z;
+	d.x=ve1->x-characterPosition.x;
+	d.y=0;
+	d.z=ve1->z-characterPosition.z;
+	//get angulos entre vectores
+	float angAB=getAnguloEntreVectores(&a,&b);
+	float angBC=getAnguloEntreVectores(&b,&c);
+	float angCD=getAnguloEntreVectores(&c,&a);
+	float angDA=getAnguloEntreVectores(&d,&a);
+	//son 360??? o dos pi?
+	return angAB+angBC+angCD+angDA;
+}
 /*void computePos(float deltaMove) {
 	x += deltaMove * lx * 0.1f;
   	//y += deltaMove * ly * 0.1f;
@@ -115,10 +142,14 @@ void renderCharacter(void){ //personaje
 		
     glPushMatrix();
     glColor3f(1.0f, 1.0f , 0.0f);
-    glTranslatef(characterPosition.x,characterPosition.y,characterPosition.z);
+    glTranslatef(characterPosition.x,0.1,characterPosition.z);
 	glRotatef(anguloARotar2, 0.0f, 1.0f,0.0f);
-	glutWireTeapot(12.0f);
+	glutWireTeapot(2.0f);
     glPopMatrix();
+
+	
+
+
 }
 
 void renderWall(vector3d *wallDir, float angle, float distance){
@@ -127,7 +158,7 @@ void renderWall(vector3d *wallDir, float angle, float distance){
     float anguloARotar = getAnguloEntreVectores(&initialFront, wallDir);
 	float anguloARotar2;
 	glPushMatrix();
-    glColor3f(0.2f, 0.5f, 0.5f);
+    //glColor3f(0.2f, 0.5f, 0.5f);
 	traslateVector(wallDir, wallDir, &wallPos, distance);
 	//glTranslatef(wallPos.x,floor,wallPos.z);
 	vector3d wall45grados1, wallVertice45gradosInt1, wallVertice45gradosExt1;
@@ -138,10 +169,10 @@ void renderWall(vector3d *wallDir, float angle, float distance){
 	glBegin(GL_LINES);
 		//glVertex3d(-wallPos.x*20, -wallPos.y*20, -wallPos.z*20);
 		//glVertex3d(wallPos.x*20, wallPos.y*20, wallPos.z*20);	
-		glColor3f(0.0f, 0.0f, 0.5f);
+		//glColor3f(0.0f, 0.0f, 0.5f);
 		glVertex3d(wall45grados1.x*20, wall45grados1.y*20, wall45grados1.z*20);
 		glVertex3d(0, 0, 0);
-		glColor3f(0.0f, 0.7f, 0.5f);
+		//glColor3f(0.0f, 0.7f, 0.5f);
 		glVertex3d(wall45grados2.x*20, wall45grados2.y*20, wall45grados2.z*20);
 		glVertex3d(0, 0, 0);
 	glEnd();
@@ -150,7 +181,7 @@ void renderWall(vector3d *wallDir, float angle, float distance){
 		glBegin(GL_LINES);
 			//glVertex3d(-wallPos.x*20, -wallPos.y*20, -wallPos.z*20);
 			//glVertex3d(wallPos.x*20, wallPos.y*20, wallPos.z*20);	
-			glColor3f(0.2f, 0.1f, 0.5f);
+			//glColor3f(0.2f, 0.1f, 0.5f);
 			glVertex3d(wallDir->x*20, wallDir->y*20, wallDir->z*20);
 			glVertex3d(-wallDir->x*20, -wallDir->y*20, -wallDir->z*20);	
 		glEnd();
@@ -169,16 +200,16 @@ void renderWall(vector3d *wallDir, float angle, float distance){
         glPopMatrix();
     }*/
 	glPushMatrix();
-		glColor3f(0.2f, 0.1f, 0.7f);
+		//glColor3f(0.2f, 0.1f, 0.7f);
 		//glRotatef(0, 0.0f, 1.0f, 0.0f);
 		//traslateVector(&wallPos, wallDir, &wallDirNew, 1);
 		//glTranslatef(wallDir->x,0,wallDir->z);
 		//anguloARotar2 = wallPos.x < 0? radiansToDegrees(anguloARotar) : -radiansToDegrees(anguloARotar);
 		//glRotatef(anguloARotar2, 0.0f, 1.0f, 0.0f);
 		traslateVector(&wall45grados1, &wall45grados1, &wallVertice45gradosInt1, getMagnitudVector(&wallPos));
-		traslateVector(&wall45grados1, &wall45grados1, &wallVertice45gradosExt1, getMagnitudVector(&wallPos)+2);
+		traslateVector(&wall45grados1, &wall45grados1, &wallVertice45gradosExt1, getMagnitudVector(&wallPos)+3);
 		traslateVector(&wall45grados2, &wall45grados2, &wallVertice45gradosInt2, getMagnitudVector(&wallPos));
-		traslateVector(&wall45grados2, &wall45grados2, &wallVertice45gradosExt2, getMagnitudVector(&wallPos)+2);
+		traslateVector(&wall45grados2, &wall45grados2, &wallVertice45gradosExt2, getMagnitudVector(&wallPos)+3);
 		glBegin(GL_QUADS); //6 caras en total
 			vector3d a, b, c, d, e, f, g, h;
 			/*a.x=-1;  a.y=1; a.z=1; //funciona
@@ -189,21 +220,28 @@ void renderWall(vector3d *wallDir, float angle, float distance){
 			f.x=1;   f.y=1; f.z=-1;
 			g.x=1;   g.y=-1; g.z=-1;
 			h.x=-1;   h.y=-1; h.z=-1;*/
-			a.x=wallVertice45gradosInt1.x; 	a.y=1; a.z=wallVertice45gradosInt1.z;
-			b.x=wallVertice45gradosInt2.x; 	b.y=1; b.z=wallVertice45gradosInt2.z;
+			a.x=wallVertice45gradosInt1.x; 	a.y=3; a.z=wallVertice45gradosInt1.z;
+			b.x=wallVertice45gradosInt2.x; 	b.y=3; b.z=wallVertice45gradosInt2.z;
 			c.x=wallVertice45gradosInt2.x; 	c.y=0; c.z=wallVertice45gradosInt2.z;
 			d.x=wallVertice45gradosInt1.x; 	d.y=0; d.z=wallVertice45gradosInt1.z;
-			e.x=wallVertice45gradosExt1.x; 	e.y=1; e.z=wallVertice45gradosExt1.z;
-			f.x=wallVertice45gradosExt2.x; 	f.y=1; f.z=wallVertice45gradosExt2.z;
+			e.x=wallVertice45gradosExt1.x; 	e.y=3; e.z=wallVertice45gradosExt1.z;
+			f.x=wallVertice45gradosExt2.x; 	f.y=3; f.z=wallVertice45gradosExt2.z;
 			g.x=wallVertice45gradosExt2.x; 	g.y=0; g.z=wallVertice45gradosExt2.z;
 			h.x=wallVertice45gradosExt1.x; 	h.y=0; h.z=wallVertice45gradosExt1.z;
-			glColor3f(1.0f, 0.0f, 0.0f);
+            //aca colision!!!!
+
+			if(collision(&d, &c, &g, &h) < 2*PI+0.02 && collision(&d, &c, &g, &h)>2*PI-0.02){
+				glColor3f(1.0f, 1.0f, 1.0f);
+				
+							printf("%f\n", collision(&d, &c, &g, &h));
+				
+			}
 			//glVertex3f(0.0f,1.0f, 2.0f); glVertex3f(1.0f,1.0f, 2.0f);
 			//glVertex3f(0.0f,0.0f, 2.0f); glVertex3f(1.0f,0.0f, 2.0f); 
 			//Pared Interna
 			//glVertex3f(0,1,1); glVertex3f(1,1,1); //0,1 1,1
 			//glVertex3f(1,0,1); glVertex3f(0,0,1); //1,0 0,0
-			glVertex3f(a.x,a.y,a.z); 			glColor3f(1.0f, 1.0f, 0.0f);glVertex3f(b.x,b.y,b.z); //0,1 1,1
+			glVertex3f(a.x,a.y,a.z); glVertex3f(b.x,b.y,b.z); //0,1 1,1
 
 			glVertex3f(c.x,c.y,c.z); glVertex3f(d.x,d.y,d.z); //1,0 0,0
 			//Pared Externa
@@ -221,8 +259,8 @@ void renderWall(vector3d *wallDir, float angle, float distance){
 			//Pared costado
 			//glVertex3f(0.0f,0.0f, 1.0f); glVertex3f(0.0f,1.0f, 1.0f);
 			//glVertex3f(0.0f,1.0f, 0.0f); glVertex3f(0.0f,0.0f, 0.0f);
-			glColor3f(1.0f, 0.0f, 0.0f);
-			glVertex3f(a.x,a.y,a.z); 			glColor3f(1.0f, 1.0f, 0.0f); glVertex3f(e.x,e.y,e.z); //0,1 1,1
+			//glColor3f(1.0f, 0.0f, 0.0f);
+			glVertex3f(a.x,a.y,a.z); glVertex3f(e.x,e.y,e.z); //0,1 1,1
 			glVertex3f(h.x,h.y,h.z); glVertex3f(d.x,d.y,d.z); //1,0 0,0
 			//Base de abajo
 			//glColor3f(0.0f,0.0f, 1.0f);
@@ -231,7 +269,7 @@ void renderWall(vector3d *wallDir, float angle, float distance){
 			glVertex3f(c.x,c.y,c.z); glVertex3f(g.x,g.y,g.z); //0,1 1,1
 			glVertex3f(h.x,h.y,h.z); glVertex3f(d.x,d.y,d.z); //1,0 0,0			
 			//Base de arriba
-			glVertex3f(b.x,b.y,b.z); glColor3f(1.0f, 0.0f, 0.0f); glVertex3f(a.x,a.y,a.z); glColor3f(1.0f, 1.0f, 0.0f); //0,1 1,1
+			glVertex3f(b.x,b.y,b.z); glVertex3f(a.x,a.y,a.z);  //0,1 1,1
 			glVertex3f(e.x,e.y,e.z); glVertex3f(f.x,f.y,f.z);  //1,0 0,0		
 
 		glEnd(); 
@@ -288,9 +326,14 @@ void renderScene(void) {
     //          x+lx, y+ly,  z+lz,
     //         0.0f, 1.0f,  0.0f);
     
-	gluLookAt(	30, 30, 30,
+	gluLookAt(	50, 50, 50,
                 0.0, 0.0,  0.0,
                 0.0f, 1.0f,  0.0f);
+    //gluLookAt(	characterPosition.x, 2.0, characterPosition.z,
+     //         characterDirection.x+characterPosition.x, 2.0, characterDirection.z+characterPosition.z,
+      //        //0.0, 0.0,  0.0,
+       //       0.0f, 1.0f,  0.0f);
+
     
 	// Draw ground
 	glPushMatrix();
@@ -307,13 +350,19 @@ void renderScene(void) {
 		glEnd();
 		glColor3f(0.0f, 1.f,0.f);
 	glPopMatrix();
-    
+    			glColor3f(1.0f, 0.0f, 0.0f);
 	makeGeometricShape(&wall.w1dir, wall.w1, 5);
+    			glColor3f(0.0f, 1.0f, 0.0f);
 	makeGeometricShape(&wall.w2dir, wall.w2, 4);
+    			glColor3f(0.0f, 0.0f, 1.0f);
 	makeGeometricShape(&wall.w3dir, wall.w3, 7);
+    			glColor3f(1.0f, 0.0f, 0.0f);
 	makeGeometricShape(&wall.w4dir, wall.w4, 4);
+    			glColor3f(1.0f, 1.0f, 0.0f);
 	makeGeometricShape(&wall.w5dir, wall.w5, 6);
+    			glColor3f(1.0f, 0.0f, 1.0f);
 	makeGeometricShape(&wall.w6dir, wall.w6, 9);
+                glColor3f(1.0f, 1.0f, 0.0f);
 	
 	//glPushMatrix();
     //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
@@ -338,7 +387,7 @@ void renderScene(void) {
 		for(int j=-3; j < 3; j++) {
             glPushMatrix();
 				glTranslatef(i*10.0,0,j * 10.0);
-				drawSnowMan();
+				//drawSnowMan();
             glPopMatrix();
         }
     glutSwapBuffers();
@@ -359,10 +408,10 @@ void pressKey(int key, int xx, int yy) {
 			charMove = -0.5f;
 			break;
         case GLUT_KEY_LEFT : 
-			charRotate=-1.0f;
+			charRotate=1.0f;
 			break;
         case GLUT_KEY_RIGHT : 
-			charRotate=1.0f;
+			charRotate=-1.0f;
 			break;
     }
 }
@@ -416,7 +465,7 @@ void mouseButton(int button, int state, int x, int y) {
 
 void drawWalls(int value){
 	int maxrand=100;
-	float step=0.4;
+	float step=0.6;
 	if(wall.w1<0){
 		wall.w1=initialDist;
 		srand(time(NULL));
@@ -456,12 +505,13 @@ void drawWalls(int value){
 		wall.w6dir.z=rand()%maxrand-maxrand/2;
 	}else{wall.w6=wall.w6-step;}
 		
-	glutTimerFunc(20, drawWalls, 0);
+	glutTimerFunc(1, drawWalls, 0);
     
 }
 
+
 int main(int argc, char **argv) {
-	initialDist=120;
+	initialDist=600;
 	//direccion inicial del personaje
 	characterDirection.x = 1.0f;
 	characterDirection.y = 0.0f;
@@ -490,12 +540,12 @@ int main(int argc, char **argv) {
 	wallDir.y=-wallPos.y;
 	wallDir.z=-wallPos.z;
 	
-	wall.w1=100;
-	wall.w2=80;
-	wall.w3=60;
-	wall.w4=40;
-	wall.w5=20;
-	wall.w6=120;
+	wall.w1=600;
+	wall.w2=500;
+	wall.w3=400;
+	wall.w4=300;
+	wall.w5=200;
+	wall.w6=100;
 	
 	// init GLUT and create window
 	
@@ -505,7 +555,7 @@ int main(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(320,320);
+	glutInitWindowSize(800,640);
 	glutCreateWindow("HexxTreMaze");
     
 	// register callbacks
@@ -518,7 +568,7 @@ int main(int argc, char **argv) {
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
-	glutTimerFunc(20, drawWalls, 0);
+	glutTimerFunc(1, drawWalls, 0);
     
 	// here are the two new functions
 	//glutMouseFunc(mouseButton);

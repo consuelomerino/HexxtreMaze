@@ -32,7 +32,7 @@ float getAnguloEntreVectores(vector3d *a, vector3d *b)
 	float productoPunto=getProductoPunto(a, b);
 	float magnitudA=getMagnitudVector(a);
 	float magnitudB=getMagnitudVector(b);
-	printf("anguloARotar = %f\n",acos(productoPunto/(magnitudA*magnitudB)));
+	//printf("anguloARotar = %f\n",acos(productoPunto/(magnitudA*magnitudB)));
 	return acos(productoPunto/(magnitudA*magnitudB));
 }
 
