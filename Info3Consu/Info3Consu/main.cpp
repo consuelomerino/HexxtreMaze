@@ -7,9 +7,22 @@
 #else
 #include <GL/glut.h>
 #endif
+//ver
+#include "texture.h"
+#define  TexMont 2 
+#define PRINCIPAL 0
+#define JUEGO  1
+#define TEXTPRINCIPAL 1
 
+#define FILL 1
+#define LINE 2
+
+#define SHRINK 1
+#define NORMAL 2
+//
 #include "vector.h"
 #define PI 3.14159265359
+
 
 vector3d characterDirection;
 vector3d characterPosition;
@@ -39,6 +52,17 @@ float charMove = 0;
 float charRotate = 0;
 int xOrigin = -1;
 int yOrigin = -1;
+
+//OpcionPantalla
+int OpcionSelecionada = PRINCIPAL;
+
+//To menu
+int fillMenu, shrinkMenu, mainMenu, colorMenu;
+//Menu status
+int menuFlag = 0;
+float scale = 1.0f;
+// color for the nose
+float red = 1.0f, blue=0.5f, green=0.5f;
 
 void changeSize(int w, int h) {
 
@@ -106,6 +130,121 @@ void drawSnowMan() {
     z += gammaMove * - lx * 0.1f;
 }
 */
+// -----------------------------------
+//             MENUS
+// -----------------------------------
+
+void processMenuStatus(int status, int x, int y) {
+
+	if (status == GLUT_MENU_IN_USE)
+		menuFlag = 1;
+	else
+		menuFlag = 0;
+}
+
+
+void processMainMenu(int option) {
+
+	// nothing to do in here
+	// all actions are for submenus
+}
+
+void processFillMenu(int option) {
+
+	switch (option) {
+
+		case FILL: glPolygonMode(GL_FRONT, GL_FILL); break;
+		case LINE: glPolygonMode(GL_FRONT, GL_LINE); break;
+	}
+}
+
+void processShrinkMenu(int option) {
+
+	switch (option) {
+
+		case SHRINK: scale = 0.5f; break;
+		case NORMAL: scale = 1.0f; break;
+	}
+}
+void createPopupMenus() {
+
+	shrinkMenu = glutCreateMenu(processShrinkMenu);
+
+	glutAddMenuEntry("Shrink",SHRINK);
+	glutAddMenuEntry("NORMAL",NORMAL);
+
+	fillMenu = glutCreateMenu(processFillMenu);
+
+	glutAddMenuEntry("Fill",FILL);
+	glutAddMenuEntry("Line",LINE);
+
+	mainMenu = glutCreateMenu(processMainMenu);
+
+	glutAddSubMenu("Polygon Mode", fillMenu);
+	glutAddSubMenu("Color", colorMenu);
+	// attach the menu to the right button
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+	// this will allow us to know if the menu is active
+	glutMenuStatusFunc(processMenuStatus);
+}
+///-------------------------
+//		Presentacion
+//--------------------------
+void drawString (void * font, char *s, float x, float y, float z){
+     unsigned int i;
+     glRasterPos3f(x, y, z);
+
+     for (i = 0; i < strlen (s); i++)
+          glutBitmapCharacter (font, s[i]);
+}
+void DibujarPresentacion(/*int ind*/){
+   
+     glPushMatrix();
+               //eje X
+               glColor3f(1,0,1);
+               drawString(GLUT_BITMAP_HELVETICA_18, (char*) "MI SUPER JUEGO 3D", 0, 1, 0); 
+            
+            glPopMatrix();
+	/*
+	textura arena;
+
+// carga
+	if(!cargarTGA("images/dry_earth.tga", &arena))
+	{
+		printf("Error cargando textura\n");
+		exit(0); // Cargamos la textura y chequeamos por errores
+	}
+
+	// uso
+	glEnable(GL_TEXTURE_2D);
+		// Arena
+		glColor3ub(255,218,53);
+		glBindTexture(GL_TEXTURE_2D,arena.ID);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0,0.0);
+			glVertex3f(-50, -50,0);
+			glTexCoord2f(1.0,0.0);
+			glVertex3f(-50, 50,0);
+			glTexCoord2f(1.0,1.0);
+			glVertex3f(50, 50,0);
+			glTexCoord2f(0.0,1.0);
+			glVertex3f(50, -50,0);
+		glEnd();
+		*/
+		//glutSwapBuffers();
+
+	// con glTexCoord seleccionas que parte de la textura vas a usar
+	// y con glTVertex pegas la textura sobre el objeto que se esta dibujando
+}
+
+void menuPrincipal(){
+	DibujarPresentacion();
+
+}
+//-----------------------------------------
+//			DIBUJA OBJETO
+//----------------------------------------
 void renderCharacter(void){ //personaje
 	float anguloARotar = getAnguloEntreVectores(&initialFront, &characterDirection);
 	float anguloARotar2 = characterDirection.x < 0?radiansToDegrees(anguloARotar):-radiansToDegrees(anguloARotar);
@@ -146,84 +285,118 @@ void renderScene(void) {
 //		computePos(deltaMove);
 //   if (gammaMove)
 //        computePosGamma(gammaMove);
-    if(charMove){
-			traslateVector(&characterPosition, &characterDirection, &newPosition, charMove);
-			copyVectorValues(&newPosition, &characterPosition);
-			traslateVector(&wallPos, &wallDir, &wallNew, charMove);
-			copyVectorValues(&wallNew, &wallPos);
-	}
-	if(charRotate){
-			getRotatedVector(&upDirection, &characterDirection, &newDirection, charRotate*PI/100);
-			copyVectorValues(&newDirection, &characterDirection);
-	}
-	
-	// Clear Color and Depth Buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-	// Reset transformations
-	glLoadIdentity();
-	// Set the camera
-    
-    //gluLookAt(	x, y, z,
-    //          x+lx, y+ly,  z+lz,
-    //         0.0f, 1.0f,  0.0f);
-    
-	gluLookAt(	30, 30, 30,
-                0.0, 0.0,  0.0,
-                0.0f, 1.0f,  0.0f);
-    
-	// Draw ground
-	glPushMatrix();
-		glBegin(GL_LINES);
-		  glVertex3d(0., 0., 0.);
-		  glVertex3d(0., 0., -20.);
-		  /*glVertex3d(0., 0., 0.);
-		  glVertex3d(0., 12., 0.);
-		  glVertex3d(0., 0., 0.);
-		  glVertex3d(0., 0., 12.);*/
-		  glColor3f(0.0f, 0.f, 1.f);
-		  glVertex3d(0., 0., 0.);
-		  glVertex3d(characterDirection.x*20, characterDirection.y*20, characterDirection.z*20);	
-		glEnd();
-		glColor3f(0.0f, 1.f,0.f);
-	glPopMatrix();
-    
-	
-	
-	//glPushMatrix();
-    //glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
-    //glRotatef(deltaAngle, lx, ly, lz);
-    renderCharacter();
-    //glPopMatrix();
-    //glPushMatrix();
-	renderWall();
-	//glPopMatrix();
-    
-    
-	glColor3f(0.9f, 0.9f, 0.9f);
-	glBegin(GL_QUADS);
-    glVertex3f(-100.0f, 0.0f, -100.0f);
-    glVertex3f(-100.0f, 0.0f,  100.0f);
-    glVertex3f( 100.0f, 0.0f,  100.0f);
-    glVertex3f( 100.0f, 0.0f, -100.0f);
-	glEnd();
-    
-    // Draw 36 SnowMen
-    
-	for(int i = -3; i < 3; i++)
-		for(int j=-3; j < 3; j++) {
-            glPushMatrix();
-				glTranslatef(i*10.0,0,j * 10.0);
-				drawSnowMan();
-            glPopMatrix();
-        }
-    glutSwapBuffers();
+
+	 switch (OpcionSelecionada) {
+        case PRINCIPAL:
+            menuPrincipal();
+            break;
+        case JUEGO:             
+           
+			if(charMove){
+					traslateVector(&characterPosition, &characterDirection, &newPosition, charMove);
+					copyVectorValues(&newPosition, &characterPosition);
+					traslateVector(&wallPos, &wallDir, &wallNew, charMove);
+					copyVectorValues(&wallNew, &wallPos);
+			}
+			if(charRotate){
+					getRotatedVector(&upDirection, &characterDirection, &newDirection, charRotate*PI/100);
+					copyVectorValues(&newDirection, &characterDirection);
+			}
+			
+			// Clear Color and Depth Buffers
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			// Reset transformations
+			glLoadIdentity();
+			// Set the camera
+			
+			//gluLookAt(	x, y, z,
+			//          x+lx, y+ly,  z+lz,
+			//         0.0f, 1.0f,  0.0f);
+			
+			gluLookAt(	30, 30, 30,
+						0.0, 0.0,  0.0,
+						0.0f, 1.0f,  0.0f);
+			
+			// Draw ground
+			glPushMatrix();
+				glBegin(GL_LINES);
+				  glVertex3d(0., 0., 0.);
+				  glVertex3d(0., 0., -20.);
+				  /*glVertex3d(0., 0., 0.);
+				  glVertex3d(0., 12., 0.);
+				  glVertex3d(0., 0., 0.);
+				  glVertex3d(0., 0., 12.);*/
+				  glColor3f(0.0f, 0.f, 1.f);
+				  glVertex3d(0., 0., 0.);
+				  glVertex3d(characterDirection.x*20, characterDirection.y*20, characterDirection.z*20);	
+				glEnd();
+				glColor3f(0.0f, 1.f,0.f);
+			glPopMatrix();
+			
+			
+			
+			//glPushMatrix();
+			//glTranslatef(x+lx*0.5, y+ly*0.5, z+lz*0.5-2);
+			//glRotatef(deltaAngle, lx, ly, lz);
+			renderCharacter();
+			//glPopMatrix();
+			//glPushMatrix();
+			renderWall();
+			//glPopMatrix();
+			
+			glPushMatrix();
+				glBegin(GL_QUADS);
+					glColor3f(25.0f, 25.0f, 25.0f);
+					glVertex3f(-100.0f, 0.0f, -100.0f);
+					glVertex3f(-100.0f, 0.0f,  100.0f);
+					glVertex3f( 100.0f, 0.0f,  100.0f);
+					glVertex3f( 100.0f, 0.0f, -100.0f);
+				glEnd();
+			glPopMatrix();
+				
+			
+			// Draw 36 SnowMen
+			
+			for(int i = -3; i < 3; i++)
+				for(int j=-3; j < 3; j++) {
+					glPushMatrix();
+						glTranslatef(i*10.0,0,j * 10.0);
+						drawSnowMan();
+					glPopMatrix();
+				}
+			glutSwapBuffers();
+			
+			
+			 //DibujarFondo(TexMont);
+			  break;
+		}
 }
 
 void processNormalKeys(unsigned char key, int xx, int yy) {
-    
-    if (key == 27)
-        exit(0);
+    glutSetMenu(mainMenu);
+	switch (key) {
+		case 27:
+			glutDestroyMenu(mainMenu);
+			glutDestroyMenu(fillMenu);
+			glutDestroyMenu(colorMenu);
+			glutDestroyMenu(shrinkMenu);
+			exit(0);
+			break;
+		case 13:
+			OpcionSelecionada = JUEGO;
+			break;
+		case 's':
+			if (!menuFlag)
+			  glutChangeToSubMenu(2,"Shrink",shrinkMenu);
+			break;
+		case 'c':
+			if (!menuFlag)
+				glutChangeToSubMenu(2,"Color",colorMenu);
+			break;
+	}
+	if (key == 27)
+		exit(0);
 }
 
 void pressKey(int key, int xx, int yy) {
@@ -322,15 +495,15 @@ int main(int argc, char **argv) {
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(320,320);
+	glutInitWindowPosition(50,50);
+	glutInitWindowSize(800,600);
 	glutCreateWindow("HexxTreMaze");
     
 	// register callbacks
-	glutDisplayFunc(renderScene);
-    //glutDisplayFunc(renderCharacter);
+	glutDisplayFunc(renderScene); //mostrar lo que esta en la funicon
+    glutDisplayFunc(renderCharacter);
 	glutReshapeFunc(changeSize);
-	glutIdleFunc(renderScene);
+	glutIdleFunc(renderScene); //cuando esta en espera llama funcion
     
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
@@ -342,10 +515,14 @@ int main(int argc, char **argv) {
 	//glutPassiveMotionFunc(mouseMove);
     
 	// OpenGL init
-	glEnable(GL_DEPTH_TEST);    
+	glEnable(GL_DEPTH_TEST); 
+	glEnable(GL_CULL_FACE);
+	//Menu
+	createPopupMenus();
 	// enter GLUT event processing cycle
 	glutMainLoop();
 
+	
     
 	return 1;
 }
