@@ -649,6 +649,18 @@ void renderScene(void) { //maneja el entorno grafico
     glutSwapBuffers();
 }
 
+void timerGlobal(int value){
+	value++;
+	if(value%100==0){
+		premiosTimer(value);
+	}
+	if(value%10==0){
+		drawWalls(value);
+	}
+	
+	glutTimerFunc(100, timerGlobal, value);
+}
+
 void initValues(){
     
     //la distancia en la que empiezan a aparecer las paredes es 600
@@ -751,7 +763,7 @@ void initValues(){
 int main(int argc, char **argv) {
     initValues();
 	// init GLUT and create window
-
+	int tiempo=0;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0,0);
@@ -768,8 +780,8 @@ int main(int argc, char **argv) {
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
-	glutTimerFunc(60, drawWalls, 0);
-    glutTimerFunc(5000, premiosTimer, 0);
+	glutTimerFunc(50, timerGlobal, tiempo);
+    //glutTimerFunc(5000, premiosTimer, 0);
 	// here are the two new functions
 	//glutMouseFunc(mouseButton);
 	//glutPassiveMotionFunc(mouseMove);
