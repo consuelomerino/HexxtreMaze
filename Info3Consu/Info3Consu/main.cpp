@@ -344,18 +344,27 @@ void renderScene(void) {
 			//glPushMatrix();
 			renderWall();
 			//glPopMatrix();
+			glPushMatrix();
+				glBegin(GL_QUADS);
+					glColor3f(0.0f, 0.0f, 100.0f);
+					glVertex3f(-20.0f, 0.0f, -20.0f);
+					glVertex3f(-20.0f, 0.0f,  20.0f);
+					glVertex3f( 20.0f, 0.0f,  20.0f);
+					glVertex3f( 20.0f, 0.0f, -20.0f);
+				glEnd();
+			glPopMatrix();
 			
 			glPushMatrix();
 				glBegin(GL_QUADS);
-					glColor3f(25.0f, 25.0f, 25.0f);
-					glVertex3f(-100.0f, 0.0f, -100.0f);
-					glVertex3f(-100.0f, 0.0f,  100.0f);
-					glVertex3f( 100.0f, 0.0f,  100.0f);
-					glVertex3f( 100.0f, 0.0f, -100.0f);
+					glColor3f(0.0f, 25.0f, 0.0f);
+					glVertex3f(-50.0f, 0.0f, -50.0f);
+					glVertex3f(-50.0f, 0.0f,  50.0f);
+					glVertex3f( 50.0f, 0.0f,  50.0f);
+					glVertex3f( 50.0f, 0.0f, -50.0f);
 				glEnd();
 			glPopMatrix();
 				
-			
+		
 			// Draw 36 SnowMen
 			
 			for(int i = -3; i < 3; i++)
