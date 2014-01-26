@@ -198,14 +198,17 @@ void drawString (void * font, char *s, float x, float y, float z){
      for (i = 0; i < strlen (s); i++)
           glutBitmapCharacter (font, s[i]);
 }
-void DibujarPresentacion(/*int ind*/){
-   
-     glPushMatrix();
+
+
+void menuPrincipal(){
+	glPushMatrix();
                //eje X
                glColor3f(1,0,1);
                drawString(GLUT_BITMAP_HELVETICA_18, (char*) "MI SUPER JUEGO 3D", 0, 1, 0); 
             
             glPopMatrix();
+			
+	glutSwapBuffers();
 	/*
 	textura arena;
 
@@ -236,10 +239,6 @@ void DibujarPresentacion(/*int ind*/){
 
 	// con glTexCoord seleccionas que parte de la textura vas a usar
 	// y con glTVertex pegas la textura sobre el objeto que se esta dibujando
-}
-
-void menuPrincipal(){
-	DibujarPresentacion();
 
 }
 //-----------------------------------------
@@ -253,7 +252,7 @@ void renderCharacter(void){ //personaje
     glColor3f(1.0f, 1.0f , 0.0f);
     glTranslatef(characterPosition.x,characterPosition.y,characterPosition.z);
 	glRotatef(anguloARotar2, 0.0f, 1.0f,0.0f);
-	glutWireTeapot(12.0f);
+	glutWireTeapot(6.0f);
     glPopMatrix();
 }
 
@@ -314,24 +313,24 @@ void renderScene(void) {
 			//          x+lx, y+ly,  z+lz,
 			//         0.0f, 1.0f,  0.0f);
 			
-			gluLookAt(	30, 30, 30,
-						0.0, 0.0,  0.0,
-						0.0f, 1.0f,  0.0f);
+			gluLookAt(	50, 50, 50,
+                0.0, 0.0,  0.0,
+                0.0f, 1.0f,  0.0f);
 			
 			// Draw ground
 			glPushMatrix();
 				glBegin(GL_LINES);
 				  glVertex3d(0., 0., 0.);
-				  glVertex3d(0., 0., -20.);
+				  glVertex3d(0., 0., -50.);
 				  /*glVertex3d(0., 0., 0.);
 				  glVertex3d(0., 12., 0.);
 				  glVertex3d(0., 0., 0.);
 				  glVertex3d(0., 0., 12.);*/
-				  glColor3f(0.0f, 0.f, 1.f);
+				  glColor3f(0.0f, 0.f, 100.0f);
 				  glVertex3d(0., 0., 0.);
 				  glVertex3d(characterDirection.x*20, characterDirection.y*20, characterDirection.z*20);	
 				glEnd();
-				glColor3f(0.0f, 1.f,0.f);
+				glColor3f(0.0f, 100.0f,0.f);
 			glPopMatrix();
 			
 			
@@ -352,6 +351,7 @@ void renderScene(void) {
 					glVertex3f( 20.0f, 0.0f,  20.0f);
 					glVertex3f( 20.0f, 0.0f, -20.0f);
 				glEnd();
+				glColor3f(0.0f, 0.0f, 100.0f);
 			glPopMatrix();
 			
 			glPushMatrix();
@@ -362,6 +362,7 @@ void renderScene(void) {
 					glVertex3f( 50.0f, 0.0f,  50.0f);
 					glVertex3f( 50.0f, 0.0f, -50.0f);
 				glEnd();
+				glColor3f(0.0f, 25.0f, 0.0f);
 			glPopMatrix();
 				
 		
