@@ -78,9 +78,11 @@ void traslateVector(vector3d *orig, vector3d *direc, vector3d *dest, float lengt
 { //avanza en direccion del vector una longitud determinada
 	vector3d unitary;
 	getUnitaryVector(direc, &unitary);
-	dest->x=orig->x+(unitary.x)*length;
-	dest->y=orig->y+(unitary.y)*length;
-	dest->z=orig->z+(unitary.z)*length;
+	if(orig->x+(unitary.x)*length >= -20 && orig->x+(unitary.x)*length <= 20 && orig->z+(unitary.z)*length >= -20 && orig->z+(unitary.z)*length <= 20) {
+		dest->x=orig->x+(unitary.x)*length;
+		dest->y=orig->y+(unitary.y)*length;
+		dest->z=orig->z+(unitary.z)*length;
+		}
 } 
 void traslateVectorNormal(vector3d *orig, vector3d *direc, vector3d *dest, float length)
 { //avanza en direccion del vector una longitud determinada

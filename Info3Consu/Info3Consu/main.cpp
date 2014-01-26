@@ -201,6 +201,11 @@ void drawString (void * font, char *s, float x, float y, float z){
 
 
 void menuPrincipal(){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gluLookAt(	50, 50, 50,
+                0.0, 0.0,  0.0,
+                0.0f, 1.0f,  0.0f);
+	glLoadIdentity();
 	glPushMatrix();
                //eje X
                glColor3f(1,0,1);
@@ -287,7 +292,12 @@ void renderScene(void) {
 
 	 switch (OpcionSelecionada) {
         case PRINCIPAL:
-            menuPrincipal();
+            glPushMatrix();
+               //eje X
+               glColor3f(1,0,1);
+               drawString(GLUT_BITMAP_HELVETICA_18, (char *)"MI SUPER JUEGO 3D", 0, 1, 0); 
+            
+            glPopMatrix();
             break;
         case JUEGO:             
            
@@ -345,13 +355,12 @@ void renderScene(void) {
 			//glPopMatrix();
 			glPushMatrix();
 				glBegin(GL_QUADS);
-					glColor3f(0.0f, 0.0f, 100.0f);
-					glVertex3f(-20.0f, 0.0f, -20.0f);
-					glVertex3f(-20.0f, 0.0f,  20.0f);
-					glVertex3f( 20.0f, 0.0f,  20.0f);
-					glVertex3f( 20.0f, 0.0f, -20.0f);
+					glColor3f(100.0f, 0.0f, 0.0f);
+					glVertex3f(-25.0f, 0.0f, -25.0f);
+					glVertex3f(-25.0f, 0.0f,  25.0f);
+					glVertex3f( 25.0f, 0.0f,  25.0f);
+					glVertex3f( 25.0f, 0.0f, -25.0f);
 				glEnd();
-				glColor3f(0.0f, 0.0f, 100.0f);
 			glPopMatrix();
 			
 			glPushMatrix();
@@ -362,7 +371,6 @@ void renderScene(void) {
 					glVertex3f( 50.0f, 0.0f,  50.0f);
 					glVertex3f( 50.0f, 0.0f, -50.0f);
 				glEnd();
-				glColor3f(0.0f, 25.0f, 0.0f);
 			glPopMatrix();
 				
 		
