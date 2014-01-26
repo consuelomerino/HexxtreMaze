@@ -316,8 +316,6 @@ void makeGeometricShape(vector3d* direc, float distancia, int cantidadDeLados){
 	glPopMatrix();
 }
 
-
-
 void processNormalKeys(unsigned char key, int xx, int yy) {
     
     if (key == 27)
@@ -434,8 +432,50 @@ void drawWalls(int value){
 		wall.w6dir.z=rand()%maxrand-maxrand/2;
 	}else{wall.w6=wall.w6-step;}
 		
-	glutTimerFunc(1, drawWalls, 0);
+	glutTimerFunc(50, drawWalls, 0);
     
+}
+
+void efectoVida(int value){
+	vidas++;
+}
+
+void efectoInvincibilidad(int value){
+	//invincibilidad=value;
+	if(value==1){
+		//glutTimerFunc(5000, efectoInvicibilidad, 0);
+	}
+}
+
+void efectoVelocidad2(int value){
+	if(value==1){
+		//velocidadPersonaje=velocidadPersonaje*2;
+		//glutTimerFunc(5000, efectoVelocidad2, 0);
+	}else{
+		//velocidadPersonaje=velocidadPersonaje/2;
+	}
+}
+
+void efectoVelocidadPared(int value){
+	if(value==1){
+		//velocidadPared=velocidadPared/2;
+		//glutTimerFunc(5000, efectoVelocidadPared, 0);
+	}else{
+		//velocidadPared=velocidadPared*2;
+	}
+}
+
+void efectoPremio(int cualPremio){
+	switch (cualPremio){
+		case vida: //efectoVida(1); break;
+		case invencibilidad: //efectoInvincibilidad(1); break;
+		case velocidad2: //efectoVelocidad2(1); break;
+		case velocidadPared: //efectoVelocidadPared(1); break;
+		case puntos1000: //efectoPuntos1000(1); break;
+		case cambiaSentido: //efectoCambiaSentido(1); break;
+		case iman: //efectoIman(1); break;
+		break;
+	}
 }
 
 void renderPremio(int cualPremio){
@@ -460,6 +500,7 @@ void drawPremios(){ //maneja cuando se pinta el premio o no
 			renderPremio(i);
 			if(distancePointToPoint(&p[i].pos,&characterPosition)<3.5){
 				p[i].tiempo=10;
+				efectoPremio(i);
 			}
 		}
 	}
@@ -649,7 +690,7 @@ void initValues(){
 	wallDir.y=-wallPos.y;
 	wallDir.z=-wallPos.z;
     //posiciones iniciales de cada una de las paredes
-    wall.w1=20;
+    wall.w1=600;
 	wall.w2=500;
 	wall.w3=400;
 	wall.w4=300;
@@ -727,7 +768,7 @@ int main(int argc, char **argv) {
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
-	//glutTimerFunc(1, drawWalls, 0);
+	glutTimerFunc(60, drawWalls, 0);
     glutTimerFunc(5000, premiosTimer, 0);
 	// here are the two new functions
 	//glutMouseFunc(mouseButton);
