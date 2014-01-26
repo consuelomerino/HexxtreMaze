@@ -23,6 +23,23 @@ typedef struct{
 }wallDistance;
 
 typedef struct{
+    vector3d pos;
+    vector3d color;
+    int tiempo;
+    float probabilidad;
+}premio;
+
+enum enum_premios {
+    vida = 0,
+    invencibilidad = 1,
+    velocidad2 = 2,
+    velocidadPared = 3,
+    puntos1000 = 4,
+    cambiaSentido = 5,
+    iman = 6
+};
+
+typedef struct{
 	float x;
 	float y;
 }vector2d;
@@ -38,4 +55,5 @@ void copyVectorValues(vector3d *orig, vector3d *dest);
 void getUnitaryVector(vector3d *v, vector3d *unitary);
 void traslateVector(vector3d *orig, vector3d *direc, vector3d *dest, float length);
 void traslateVectorNormal(vector3d *orig, vector3d *direc, vector3d *dest, float length);
+float distancePointToPoint(vector3d *a, vector3d *b);
 #endif

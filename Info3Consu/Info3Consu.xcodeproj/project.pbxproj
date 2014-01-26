@@ -11,6 +11,7 @@
 		D212CB48188B161100D3313B /* Info3Consu.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D212CB47188B161100D3313B /* Info3Consu.1 */; };
 		D212CB4F188B163600D3313B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D212CB4E188B163600D3313B /* OpenGL.framework */; };
 		D212CB51188B163D00D3313B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D212CB50188B163D00D3313B /* GLUT.framework */; };
+		D2A8E0581891DE8400928DBE /* vectormath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2A8E0571891DE8400928DBE /* vectormath.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,8 @@
 		D212CB47188B161100D3313B /* Info3Consu.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Info3Consu.1; sourceTree = "<group>"; };
 		D212CB4E188B163600D3313B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		D212CB50188B163D00D3313B /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		D2A8E0561891DE8400928DBE /* vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; };
+		D2A8E0571891DE8400928DBE /* vectormath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectormath.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,8 @@
 		D212CB44188B161100D3313B /* Info3Consu */ = {
 			isa = PBXGroup;
 			children = (
+				D2A8E0561891DE8400928DBE /* vector.h */,
+				D2A8E0571891DE8400928DBE /* vectormath.cpp */,
 				D212CB45188B161100D3313B /* main.cpp */,
 				D212CB47188B161100D3313B /* Info3Consu.1 */,
 			);
@@ -125,6 +130,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2A8E0581891DE8400928DBE /* vectormath.cpp in Sources */,
 				D212CB46188B161100D3313B /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -233,6 +239,7 @@
 				D212CB4D188B161100D3313B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

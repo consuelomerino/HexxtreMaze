@@ -51,7 +51,6 @@ void getRotatedVector(vector3d *k, vector3d *v, vector3d *vrot, float angle)
 	vector3d vcruz;
 	vector3d vcruz2;
 	float kvprodPunto;
-	vector2d kescalarkvprodpunto;
 	getProductoEscalar(v, cos(angle),&vesc); 	//v*cos(ang) --primer argumento vesc
 	getProductoCruz1x3(k, v, &vcruz); 			//k x v
 	getProductoEscalar(&vcruz, sin(angle), &vcruz2);	//k x v * sen(ang) --segundo argumento vcruz2
@@ -97,4 +96,9 @@ void traslateVectorNormal(vector3d *orig, vector3d *direc, vector3d *dest, float
 	dest->x=orig->x+(unitary.x)*length;
 	dest->y=orig->y+(unitary.y)*length;
 	dest->z=orig->z+(unitary.z)*length;
-} 
+}
+
+float distancePointToPoint(vector3d *a, vector3d *b){
+    return sqrt(pow(a->x-b->x,2)+pow(a->z-b->z,2));
+}
+ 
