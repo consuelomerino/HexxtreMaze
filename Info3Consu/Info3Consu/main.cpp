@@ -439,91 +439,56 @@ void drawWalls(int value){
 }
 
 void renderPremio(int cualPremio){
-    switch (cualPremio) {
-        case vida:
-            glPushMatrix();
-                glColor3d(p[vida].color.x, p[vida].color.y, p[vida].color.z);
-                glTranslatef(p[vida].pos.x, 1.0, p[vida].pos.z);
+    glPushMatrix();
+                glColor3d(p[cualPremio].color.x, p[cualPremio].color.y, p[cualPremio].color.z);
+                glTranslatef(p[cualPremio].pos.x, 1.0, p[cualPremio].pos.z);
                 glutSolidSphere(2.0, 20.0, 20.0);
-            glPopMatrix();
-            break;
-            
-        case invencibilidad:
-            break;
-    }
+    glPopMatrix();
+   
     
 }
 
-void drawPremios(){
+void drawPremios(){ //maneja cuando se pinta el premio o no
     srand(time(NULL));
     int maxrand=200;
-    printf("%d", p[vida].tiempo);
-    if(p[vida].tiempo==6){
-        p[vida].pos.x=rand()%maxrand-maxrand/2;
-		p[vida].pos.y=1.0;
-		p[vida].pos.z=rand()%maxrand-maxrand/2;
-        if((rand()%100)/100<= p[vida].probabilidad) p[vida].tiempo--;
-    }else if(p[vida].tiempo<6 && p[vida].tiempo>0){
-        renderPremio(vida);
-    }
-    if(p[invencibilidad].tiempo==6){
-        p[invencibilidad].pos.x=rand()%maxrand-maxrand/2;
-		p[invencibilidad].pos.y=1.0;
-		p[invencibilidad].pos.z=rand()%maxrand-maxrand/2;
-        if(rand()%100/100<=p[invencibilidad].probabilidad) p[invencibilidad].tiempo--;
-    }else if(p[invencibilidad].tiempo<6){
-        renderPremio(invencibilidad);
-    }
-    if(p[velocidad2].tiempo==6){
-        p[velocidad2].pos.x=rand()%maxrand-maxrand/2;
-		p[velocidad2].pos.y=1.0;
-		p[velocidad2].pos.z=rand()%maxrand-maxrand/2;
-        p[velocidad2].tiempo--;
-    }else if(p[velocidad2].tiempo<6){
-        renderPremio(velocidad2);
-    }
-    if(p[velocidadPared].tiempo==6){
-        p[velocidadPared].pos.x=rand()%maxrand-maxrand/2;
-		p[velocidadPared].pos.y=1.0;
-		p[velocidadPared].pos.z=rand()%maxrand-maxrand/2;
-        p[velocidadPared].tiempo--;
-    }else if(p[velocidadPared].tiempo<6){
-        renderPremio(velocidadPared);
-    }
-    if(p[puntos1000].tiempo==6){
-        p[puntos1000].pos.x=rand()%maxrand-maxrand/2;
-		p[puntos1000].pos.y=1.0;
-		p[puntos1000].pos.z=rand()%maxrand-maxrand/2;
-        p[puntos1000].tiempo--;
-    }else if(p[puntos1000].tiempo<6){
-        renderPremio(puntos1000);
-    }
-    if(p[cambiaSentido].tiempo==6){
-        p[cambiaSentido].pos.x=rand()%maxrand-maxrand/2;
-		p[cambiaSentido].pos.y=1.0;
-		p[cambiaSentido].pos.z=rand()%maxrand-maxrand/2;
-        p[cambiaSentido].tiempo--;
-    }else if(p[cambiaSentido].tiempo<6){
-        renderPremio(cambiaSentido);
-    }if(p[iman].tiempo==6){
-        p[iman].pos.x=rand()%maxrand-maxrand/2;
-		p[iman].pos.y=1.0;
-		p[iman].pos.z=rand()%maxrand-maxrand/2;
-        p[iman].tiempo--;
-    }else if(p[iman].tiempo<6){
-        renderPremio(iman);
-    }
-
-    
-    
+	for(int i=0; i<8; i++){
+		if(p[i].tiempo==6){ //cuando el tiempo es 6, genera una posicion random del premio
+			p[i].pos.x=rand()%maxrand-maxrand/2;
+			p[i].pos.y=1.0;
+			p[i].pos.z=rand()%maxrand-maxrand/2;
+		}else if(p[i].tiempo<6 && p[i].tiempo>0){ //
+			renderPremio(i);
+			if(distancePointToPoint(&p[i].pos,&characterPosition)<3.5){
+				p[i].tiempo=10;
+			}
+		}
+	}
 }
 
-void premiosTimer(int value){
-    if(p[vida].tiempo==0) p[vida].tiempo=10;
-    else if(p[vida].tiempo!=6) p[vida].tiempo=p[vida].tiempo -1;
-    glutTimerFunc(5000, premiosTimer, value);
+void premiosTimer(int value){ //maneja la variable de tiempo
+	for(int i=0;i<8;i++){
+		if(p[i].tiempo==0) p[i].tiempo=10; //reset cuando llega a 0
+		else if(p[i].tiempo <= 10 && p[i].tiempo > 6){ //idle time
+			p[i].tiempo--;	
+		}
+		else if(p[i].tiempo == 6){ //hay un 10% de probabilidades que pueda ser dibujado
+			if((rand()%100)<= p[i].probabilidad*100) { 
+				p[i].tiempo--;
+			}else{
+				p[i].tiempo=7;
+			}
+		}		//idle time
+		else if(p[i].tiempo < 6) {
+			p[i].tiempo--;
+		}
+		printf("%d ", p[i].tiempo);
+
+	}
+	printf("\n");
+	glutTimerFunc(5000, premiosTimer, value);
 }
-void renderScene(void) {
+
+void renderScene(void) { //maneja el entorno grafico
     
 //	if (deltaMove)
 //		computePos(deltaMove);
@@ -570,18 +535,6 @@ void renderScene(void) {
                   0.0f, 1.0f,  0.0f);
     
     
-    GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
-    GLfloat lightColor0[] = {1.9f, 1.9f, 1.9f, 1.0f}; //Color (0.5, 0.5, 0.5)
-    GLfloat lightPos0[] = {50, 10, 50, 0.0f}; //Positioned at (4, 0, 8)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
-    //Add directed light
-    GLfloat lightColor1[] = {1.9f, 1.9f, 1.9f, 1.0f}; //Color (0.5, 0.2, 0.2)
-    //Coming from the direction (-1, 0.5, 0.5)
-    GLfloat lightPos1[] = {-50, 10.0f, -50, 1.0f};
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
-    glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
     
 	// Draw ground
 	glPushMatrix();
@@ -638,6 +591,20 @@ void renderScene(void) {
 		glVertex3f( 100.0f, 0.0f, -100.0f);
 	glEnd();
     
+	GLfloat ambientColor[] = {0.2f, 0.2f, 0.2f, 1.0f}; //Color(0.2, 0.2, 0.2)
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+    GLfloat lightColor0[] = {1.9f, 1.9f, 1.9f, 1.0f}; //Color (0.5, 0.5, 0.5)
+    GLfloat lightPos0[] = {50, 10, 50, 0.0f}; //Positioned at (4, 0, 8)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
+    //Add directed light
+    GLfloat lightColor1[] = {1.9f, 1.9f, 1.9f, 1.0f}; //Color (0.5, 0.2, 0.2)
+    //Coming from the direction (-1, 0.5, 0.5)
+    GLfloat lightPos1[] = {-50, 10.0f, -50, 1.0f};
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
+    glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
+    
+	
     glutSwapBuffers();
 }
 
@@ -704,40 +671,40 @@ void initValues(){
     p[invencibilidad].color.x=1.0f;
     p[invencibilidad].color.y=1.0f;
     p[invencibilidad].color.z=1.0f;
-    p[invencibilidad].tiempo = 5;
+    p[invencibilidad].tiempo = 6;
     
     p[velocidad2].probabilidad = 0.15;
     p[velocidad2].color.x=0.0f;
     p[velocidad2].color.y=1.0f;
     p[velocidad2].color.z=0.0f;
-    p[velocidad2].tiempo = 5;
+    p[velocidad2].tiempo = 6;
     
     p[velocidadPared].probabilidad = 0.15;
     p[velocidadPared].color.x=0.0f;
     p[velocidadPared].color.y=0.0f;
     p[velocidadPared].color.z=1.0f;
-    p[velocidadPared].tiempo = 5;
+    p[velocidadPared].tiempo = 6;
     
     //1 0.752941 0.796078
     p[puntos1000].probabilidad = 0.5;
     p[puntos1000].color.x=1.0f;
     p[puntos1000].color.y=0.752941f;
     p[puntos1000].color.z=0.796078f;
-    p[puntos1000].tiempo = 5;
+    p[puntos1000].tiempo = 6;
     
     //0.603922 0.803922 0.196078
     p[cambiaSentido].probabilidad = 0.2;
     p[cambiaSentido].color.x=0.603922f;
     p[cambiaSentido].color.y=0.803922f;
     p[cambiaSentido].color.z=0.196078f;
-    p[cambiaSentido].tiempo = 5;
+    p[cambiaSentido].tiempo = 6;
     
     //0.627451 0.12549 0.941176
     p[iman].probabilidad = 0.1;
     p[iman].color.x=0.627451f;
     p[iman].color.y=0.12549f;
     p[iman].color.z=0.941176f;
-    p[iman].tiempo = 5;
+    p[iman].tiempo = 6;
 }
 
 int main(int argc, char **argv) {
