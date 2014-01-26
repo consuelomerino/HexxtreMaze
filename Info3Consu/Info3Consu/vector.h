@@ -20,6 +20,7 @@ typedef struct{
 	vector3d w4dir;
 	vector3d w5dir;
 	vector3d w6dir;
+	int w1pared, w2pared, w3pared, w4pared, w5pared, w6pared;
 }wallDistance;
 
 typedef struct{
