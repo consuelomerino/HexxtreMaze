@@ -9,6 +9,7 @@
 #endif
 //ver
 #include "texture.h"
+//#include "texturaPrueba.h"
 #define  TexMont 2 
 #define PRINCIPAL 0
 #define JUEGO  1
@@ -191,59 +192,102 @@ void createPopupMenus() {
 ///-------------------------
 //		Presentacion
 //--------------------------
-void drawString (void * font, char *s, float x, float y, float z){
-     unsigned int i;
-     glRasterPos3f(x, y, z);
+void setOrthographicProjection() {
 
-     for (i = 0; i < strlen (s); i++)
-          glutBitmapCharacter (font, s[i]);
-}
+	// switch to projection mode
+	glMatrixMode(GL_PROJECTION);
 
-
-void menuPrincipal(){
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	gluLookAt(	50, 50, 50,
-                0.0, 0.0,  0.0,
-                0.0f, 1.0f,  0.0f);
-	glLoadIdentity();
+	// save previous matrix which contains the 
+	//settings for the perspective projection
 	glPushMatrix();
-               //eje X
-               glColor3f(1,0,1);
-               drawString(GLUT_BITMAP_HELVETICA_18, (char*) "MI SUPER JUEGO 3D", 0, 1, 0); 
-            
-            glPopMatrix();
-			
+
+	// reset matrix
+	glLoadIdentity();
+
+	// set a 2D orthographic projection
+	gluOrtho2D(0, 800, 600, 0);
+	
+	// switch back to modelview mode
+	glMatrixMode(GL_MODELVIEW);
+}
+void resetPerspectiveProjection() {
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+}
+void renderBitmapString(float x, float y, void *font,char *string)
+{
+  
+  char *c;
+  glRasterPos2f(x, y);
+  for (c=string; *c != '\0'; c++) {
+    glutBitmapCharacter(font, *c);
+  }
+}
+/*
+void DibujarPresentacion(int ind){
+    
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture[ind]);
+   
+    glBegin(GL_QUADS); 
+    
+
+        glTexCoord2d(-1.0,0.0);
+        glVertex3f( -1.0f,1.0f,0.0f);		
+        glTexCoord2d(0.0,0.0);
+        glVertex3f(1.0f,1.0f,0.0f);		
+        glTexCoord2d(0.0,-1.0);
+        glVertex3f(1.0f, -1.0f,0.0f);	
+        glTexCoord2d(-1.0,-1.0);
+        glVertex3f( -1.0f, -1.0f,0.0f);
+
+
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+	glFlush();
+
+  //  if(ind == VecRac)
+   // {
+        //IngresarTexto();
+   // }
 	glutSwapBuffers();
-	/*
+     
+}*/
+void menuPrincipal(){
+	// Declaracion
+	setOrthographicProjection();
+
+	// Declaracion
 	textura arena;
 
-// carga
-	if(!cargarTGA("images/dry_earth.tga", &arena))
-	{
-		printf("Error cargando textura\n");
-		exit(0); // Cargamos la textura y chequeamos por errores
-	}
+	// carga
+	if(!cargarTGA("images/C.tga", &arena))
+		{
+			printf("Error cargando textura\n");
+			exit(0); // Cargamos la textura y chequeamos por errores
+		}
 
 	// uso
 	glEnable(GL_TEXTURE_2D);
-		// Arena
-		glColor3ub(255,218,53);
-		glBindTexture(GL_TEXTURE_2D,arena.ID);
-		glBegin(GL_POLYGON);
-			glTexCoord2f(0.0,0.0);
-			glVertex3f(-50, -50,0);
-			glTexCoord2f(1.0,0.0);
-			glVertex3f(-50, 50,0);
-			glTexCoord2f(1.0,1.0);
-			glVertex3f(50, 50,0);
-			glTexCoord2f(0.0,1.0);
-			glVertex3f(50, -50,0);
-		glEnd();
-		*/
-		//glutSwapBuffers();
 
-	// con glTexCoord seleccionas que parte de la textura vas a usar
-	// y con glTVertex pegas la textura sobre el objeto que se esta dibujando
+    // Arena
+    glColor3ub(255,218,53);
+    glBindTexture(GL_TEXTURE_2D,arena.ID);
+    glBegin(GL_POLYGON);
+    glTexCoord2f(50.0,50.0);
+    glVertex3f(-50, -50,0);
+    glTexCoord2f(50.0,50.0);
+    glVertex3f(-50, 50,0);
+    glTexCoord2f(50.0,50.0);
+    glVertex3f(50, 50,0);
+    glTexCoord2f(50.0,50.0);
+    glVertex3f(50, -50,0);
+    glEnd();
+
+	//DibujarPresentacion(PORTADA);
+	resetPerspectiveProjection();
 
 }
 //-----------------------------------------
@@ -292,12 +336,7 @@ void renderScene(void) {
 
 	 switch (OpcionSelecionada) {
         case PRINCIPAL:
-            glPushMatrix();
-               //eje X
-               glColor3f(1,0,1);
-               drawString(GLUT_BITMAP_HELVETICA_18, (char *)"MI SUPER JUEGO 3D", 0, 1, 0); 
-            
-            glPopMatrix();
+            menuPrincipal();
             break;
         case JUEGO:             
            
@@ -326,7 +365,6 @@ void renderScene(void) {
 			gluLookAt(	50, 50, 50,
                 0.0, 0.0,  0.0,
                 0.0f, 1.0f,  0.0f);
-			
 			// Draw ground
 			glPushMatrix();
 				glBegin(GL_LINES);
@@ -355,7 +393,8 @@ void renderScene(void) {
 			//glPopMatrix();
 			glPushMatrix();
 				glBegin(GL_QUADS);
-					glColor3f(100.0f, 0.0f, 0.0f);
+					//glColor3f(100.0f, 0.0f, 0.0f);
+					glColor3f(25.0f, 25.0f, 25.0f);
 					glVertex3f(-25.0f, 0.0f, -25.0f);
 					glVertex3f(-25.0f, 0.0f,  25.0f);
 					glVertex3f( 25.0f, 0.0f,  25.0f);
@@ -365,7 +404,8 @@ void renderScene(void) {
 			
 			glPushMatrix();
 				glBegin(GL_QUADS);
-					glColor3f(0.0f, 25.0f, 0.0f);
+					//glColor3f(0.0f, 25.0f, 0.0f);
+					glColor3f(25.0f, 25.0f, 25.0f);
 					glVertex3f(-50.0f, 0.0f, -50.0f);
 					glVertex3f(-50.0f, 0.0f,  50.0f);
 					glVertex3f( 50.0f, 0.0f,  50.0f);
@@ -375,14 +415,14 @@ void renderScene(void) {
 				
 		
 			// Draw 36 SnowMen
-			
+			/*
 			for(int i = -3; i < 3; i++)
 				for(int j=-3; j < 3; j++) {
 					glPushMatrix();
 						glTranslatef(i*10.0,0,j * 10.0);
 						drawSnowMan();
 					glPopMatrix();
-				}
+				}*/
 			glutSwapBuffers();
 			
 			
@@ -512,11 +552,13 @@ int main(int argc, char **argv) {
 	wallDir.z=-wallPos.z;
 	// init GLUT and create window
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH) ;
 	glutInitWindowPosition(50,50);
 	glutInitWindowSize(800,600);
 	glutCreateWindow("HexxTreMaze");
     
+	//LoadGLTextures();
+	
 	// register callbacks
 	glutDisplayFunc(renderScene); //mostrar lo que esta en la funicon
     glutDisplayFunc(renderCharacter);
