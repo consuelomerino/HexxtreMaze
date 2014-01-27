@@ -16,8 +16,8 @@ float infoCollision = false;
 int vidas; //vidas actuales del jugador
 int tiempo; //tiempo de juego en multiplos de 10ms
 int esInvencible; //0 si no es invencible, 1 si es invencible
-int initVelocidadPersonaje; //velocidad inicial del personaje
-int velocidadPersonaje; //velocidad actual del personaje
+float initVelocidadPersonaje; //velocidad inicial del personaje
+float velocidadPersonaje; //velocidad actual del personaje
 int banderaVelocidad2; //se usa para el timer de cuanto tiempo tiene que estar con la velocidad modificada
 int velocidadParedes; //velocidad actual de las paredes
 int puntos; //contador de puntos del jugador
@@ -266,11 +266,10 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 void pressKey(int key, int xx, int yy) {
     switch (key) {
         case GLUT_KEY_UP : 
-			printf("%d", velocidadPersonaje);
-			charMove = 0.5; 
+			charMove = velocidadPersonaje; 
 			break;
         case GLUT_KEY_DOWN : 
-			charMove = -0.5;
+			charMove = -velocidadPersonaje;
 			break;
         case GLUT_KEY_LEFT : 
 			charRotate=1.0f;
@@ -392,6 +391,7 @@ void efectoInvencibilidad(int value){ //hace que el personaje sea invencible
 void efectoVelocidad2(int value){ //duplica la velocidad del personaje
 	if(value==1){
 		velocidadPersonaje=initVelocidadPersonaje/2;
+		printf("velocidadPersonaje: %d", velocidadPersonaje);
 		glutTimerFunc(5000, efectoVelocidad2, 0);
 	}else{
 		velocidadPersonaje=initVelocidadPersonaje*2;
@@ -410,8 +410,8 @@ void efectoVelocidadPared(int value){ //duplica la velocidad de la pared, falta 
 void efectoPremio(int cualPremio){ //llama a cada una de las funciones, dependiendo de que premio comio, falta hacer
 	switch (cualPremio){
 		case vida: efectoVida(1); break;
-		case invencibilidad: efectoInvencibilidad(1); break;
-		case velocidad2: //efectoVelocidad2(1); break;
+		case invencibilidad: efectoInvencibilidad(1); printf("Sos invencible?");		break;
+		case velocidad2: efectoVelocidad2(1); break;
 		case velocidadPared: //efectoVelocidadPared(1); break;
 		case puntos1000: //efectoPuntos1000(1); break;
 		case cambiaSentido: //efectoCambiaSentido(1); break;
@@ -443,6 +443,7 @@ void drawPremios(){ //maneja cuando se pinta el premio o no
 			if(distancePointToPoint(&p[i].pos,&characterPosition)<3.5){
 				p[i].tiempo=10;
 				efectoPremio(i);
+				printf("Premio: %d\n", i);
 			}
 		}
 	}
@@ -467,9 +468,9 @@ void premiosTimer(int value){ //maneja la variable de tiempo
 		printf("%d ", p[i].tiempo);
 
 	}
-	if(p[invencibilidad].tiempo=6) esInvencible=0;
+	if(p[invencibilidad].tiempo==6) esInvencible=0;
 	printf("\n");
-	//if(p[velocidad2].tiempo=6) //velocidadPersonaje=initVelocidadPersonaje;
+	if(p[velocidad2].tiempo==6) velocidadPersonaje=initVelocidadPersonaje;
 	//glutTimerFunc(5000, premiosTimer, value);
 }
 
@@ -691,7 +692,7 @@ void initValues(){
     p[vida].color.z=0.0f;
     p[vida].tiempo = 6;
     //0.1
-    p[invencibilidad].probabilidad = 0.1;
+    p[invencibilidad].probabilidad = 1.0;
     p[invencibilidad].color.x=1.0f; //blanco
     p[invencibilidad].color.y=1.0f;
     p[invencibilidad].color.z=1.0f;
@@ -770,14 +771,3 @@ int main(int argc, char **argv) {
     
 	return 1;
 }
-
-
-
-
-
-
-
-
-
-
-
