@@ -11,7 +11,7 @@
 
 #include "vector.h"
 #define PI 3.14159265359
-
+int w, h;
 float infoCollision = false;
 int vidas; //vidas actuales del jugador
 int tiempo; //tiempo de juego en multiplos de 10ms
@@ -19,7 +19,8 @@ int esInvencible; //0 si no es invencible, 1 si es invencible
 float initVelocidadPersonaje; //velocidad inicial del personaje
 float velocidadPersonaje; //velocidad actual del personaje
 int banderaVelocidad2; //se usa para el timer de cuanto tiempo tiene que estar con la velocidad modificada
-int velocidadParedes; //velocidad actual de las paredes
+float velocidadParedes; //velocidad actual de las paredes
+float initVelocidadParedes; //velocidad inicial de las paredes
 int puntos; //contador de puntos del jugador
 int banderaPerderVidas; //bandera que se usa para el timer, cuanto tiempo tiene de invencibilidad antes de perder otra vida
 vector3d characterDirection; //la direccion actual del personaje
@@ -87,6 +88,44 @@ void changeSize(int w, int h) {
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
 }
+
+void renderBitmapString(float x, float y, float z, void *font, char *string) {
+  char *c;
+  glRasterPos3f(x, y,z);
+  for (c=string; *c != '\0'; c++) {
+			glutBitmapCharacter(font, *c);
+  }
+}
+
+void setOrthographicProjection() {
+
+	// switch to projection mode
+	glMatrixMode(GL_PROJECTION);
+
+	// save previous matrix which contains the
+	//settings for the perspective projection
+	glPushMatrix();
+
+	// reset matrix
+	glLoadIdentity();
+
+	// set a 2D orthographic projection
+	gluOrtho2D(0, w, h, 0);
+
+	// switch back to modelview mode
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void restorePerspectiveProjection() {
+
+	glMatrixMode(GL_PROJECTION);
+	// restore previous projection matrix
+	glPopMatrix();
+
+	// get back to modelview mode
+	glMatrixMode(GL_MODELVIEW);
+}
+
 
 float collision(vector3d* v1, vector3d* v2, vector3d* p){
     //printf("v1 = %f %f %f\n", v1->x, v1->y, v1->z);
@@ -329,7 +368,7 @@ void mouseButton(int button, int state, int x, int y) { //[DEPRECATED]
 
 void drawWalls(int value){ //determina la direccion y cuantas paredes va a tener cada pared
 	int maxrand=100;
-	float step=0.6;
+	float step=velocidadParedes;
 	if(wall.w1<0){
 		wall.w1=initialDist;
 		srand(time(NULL));
@@ -390,11 +429,11 @@ void efectoInvencibilidad(int value){ //hace que el personaje sea invencible
 
 void efectoVelocidad2(int value){ //duplica la velocidad del personaje
 	if(value==1){
-		velocidadPersonaje=initVelocidadPersonaje/2;
+		velocidadPersonaje=initVelocidadPersonaje*2;
 		printf("velocidadPersonaje: %d", velocidadPersonaje);
 		glutTimerFunc(5000, efectoVelocidad2, 0);
 	}else{
-		velocidadPersonaje=initVelocidadPersonaje*2;
+		velocidadPersonaje=initVelocidadPersonaje;
 	}
 }
 
@@ -403,17 +442,21 @@ void efectoVelocidadPared(int value){ //duplica la velocidad de la pared, falta 
 		velocidadParedes=velocidadParedes/2;
 		glutTimerFunc(5000, efectoVelocidadPared, 0);
 	}else{
-		velocidadParedes=velocidadParedes*2;
+		velocidadParedes=initVelocidadParedes;
 	}
+}
+
+void efectoPuntos1000(int value){
+	puntos=puntos+1000;
 }
 
 void efectoPremio(int cualPremio){ //llama a cada una de las funciones, dependiendo de que premio comio, falta hacer
 	switch (cualPremio){
 		case vida: efectoVida(1); break;
-		case invencibilidad: efectoInvencibilidad(1); printf("Sos invencible?");		break;
+		case invencibilidad: efectoInvencibilidad(1); break;
 		case velocidad2: efectoVelocidad2(1); break;
-		case velocidadPared: //efectoVelocidadPared(1); break;
-		case puntos1000: //efectoPuntos1000(1); break;
+		case velocidadPared: efectoVelocidadPared(1); break;
+		case puntos1000: efectoPuntos1000(1); break;
 		case cambiaSentido: //efectoCambiaSentido(1); break;
 		case iman: //efectoIman(1); break;
 		break;
@@ -477,6 +520,10 @@ void premiosTimer(int value){ //maneja la variable de tiempo
 void renderScene(void) { //maneja el entorno grafico
     
     if(charMove){ //calcula la nueva posicion del personaje
+			if(characterPosition.x>100) characterPosition.x=100;
+			if(characterPosition.x<-100) characterPosition.x=-100;
+			if(characterPosition.z>100) characterPosition.z=100;
+			if(characterPosition.z<-100) characterPosition.z=-100;
 			traslateVector(&characterPosition, &characterDirection, &newPosition, charMove);
 			copyVectorValues(&newPosition, &characterPosition);
 	}
@@ -532,8 +579,14 @@ void renderScene(void) { //maneja el entorno grafico
             glVertex3d(characterDirection.x*20, characterDirection.y*20, characterDirection.z*20);
 		glEnd();
 	glPopMatrix();
-    
-    
+    char number[3];
+    glColor3f(1.0f, 0.f, 0.f);
+	sprintf(number,"%d",vidas);
+	renderBitmapString(characterPosition.x, 2.0f, characterPosition.z, (void *)3, number);
+	char score[10];
+	glColor3f(0.0f, 1.f, 1.f);
+	sprintf(score, "Score: %d",puntos);
+	renderBitmapString(70, 1.0f, 60, (void *)3, score);
 	//dibuja las paredes
     glPushMatrix();
 				glColor3f(1.0f, 0.0f, 0.0f);
@@ -579,7 +632,7 @@ void renderScene(void) { //maneja el entorno grafico
     glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor1);
     glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
     
-	
+	if(vidas==0) exit(0); 
     glutSwapBuffers();
 }
 
@@ -594,9 +647,7 @@ void timerGlobal(int value){ //maneja la llamada de las funciones que deben ser 
 	if(banderaPerderVidas>0){
 		banderaPerderVidas=banderaPerderVidas-10;
 	}
-	if(banderaVelocidad2>0){
-		banderaVelocidad2=banderaVelocidad2-10;
-	}
+	puntos++;
 	glutTimerFunc(10, timerGlobal, 1);
 }
 
@@ -611,9 +662,9 @@ void initValues(){
 	tiempo=0;
 	esInvencible=0;
 	initVelocidadPersonaje=0.5;
-	banderaVelocidad2=0;
 	velocidadPersonaje=0.5;
-	velocidadParedes=0;
+	velocidadParedes=0.6;
+	initVelocidadParedes=0.6;
 	puntos=0;
 	banderaPerderVidas=0;
 
@@ -698,20 +749,20 @@ void initValues(){
     p[invencibilidad].color.z=1.0f;
     p[invencibilidad].tiempo = 6;
     //0.15
-    p[velocidad2].probabilidad = 1.0;
-    p[velocidad2].color.x=0.0f;	//azul
+    p[velocidad2].probabilidad = 0.15;
+    p[velocidad2].color.x=0.0f;	//green
     p[velocidad2].color.y=1.0f;
     p[velocidad2].color.z=0.0f;
     p[velocidad2].tiempo = 6;
-    
+    //0.15
     p[velocidadPared].probabilidad = 0.15;
-    p[velocidadPared].color.x=0.0f; //verde
+    p[velocidadPared].color.x=0.0f; //azul
     p[velocidadPared].color.y=0.0f;
     p[velocidadPared].color.z=1.0f;
     p[velocidadPared].tiempo = 6;
     
     //1 0.752941 0.796078 //prob 0.5
-    p[puntos1000].probabilidad = 0.9;
+    p[puntos1000].probabilidad = 0.5;
     p[puntos1000].color.x=1.0f;			//rosado
     p[puntos1000].color.y=0.552941f;
     p[puntos1000].color.z=0.596078f;
