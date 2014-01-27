@@ -686,19 +686,19 @@ void initValues(){
 	
 	//inicializacion de los premios
     //0.1
-	p[vida].probabilidad = 0.9;
+	p[vida].probabilidad = 0.1;
     p[vida].color.x=1.0f; //rojo
     p[vida].color.y=0.0f;
     p[vida].color.z=0.0f;
     p[vida].tiempo = 6;
     //0.1
-    p[invencibilidad].probabilidad = 1.0;
+    p[invencibilidad].probabilidad = 0.1;
     p[invencibilidad].color.x=1.0f; //blanco
     p[invencibilidad].color.y=1.0f;
     p[invencibilidad].color.z=1.0f;
     p[invencibilidad].tiempo = 6;
-    
-    p[velocidad2].probabilidad = 0.15;
+    //0.15
+    p[velocidad2].probabilidad = 1.0;
     p[velocidad2].color.x=0.0f;	//azul
     p[velocidad2].color.y=1.0f;
     p[velocidad2].color.z=0.0f;
